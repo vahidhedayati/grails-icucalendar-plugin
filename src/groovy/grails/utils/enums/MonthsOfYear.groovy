@@ -1,5 +1,9 @@
-package  grails.utils
+package grails.utils.enums
 
+
+import grails.utils.Icu4jHelper
+
+import java.util.Date
 
 import com.ibm.icu.text.SimpleDateFormat
 import com.ibm.icu.util.ULocale
@@ -67,22 +71,27 @@ public enum MonthsOfYear {
 		}
 		return collection
 	}
-	
+	public static EnumSet<MonthsOfYear> getMonthsBeforeAndAfter(int currentMonth, int before,int after) {
+		EnumSet<MonthsOfYear> collection =  EnumSet.noneOf( MonthsOfYear.class )
+		values().each{MonthsOfYear val ->
+			if (val.month <= currentMonth &&  ((currentMonth+before) <=val.month) ||
+				 val.month >= currentMonth &&  ((val.month-currentMonth) <= after) ) {
+				collection.add(val)
+			}
+		}
+		return collection
+	}
 		
 	public static void initialiseEnumByLocale(ULocale ulocale) {
-		
 		java.text.DateFormat format = new  java.text.SimpleDateFormat("dd/MM/yyyy")
 		Date date = format.parse("1/1/2018")
-		
 		String longMonthFormat='MMMM'
 		SimpleDateFormat lmf = new SimpleDateFormat(longMonthFormat, ulocale)
-		
 		MonthsOfYear first = values()[0]
-		//nf.format(first.dom)
 		if (first.value!=lmf.format(date)) {
 			MonthsOfYear.values().each{MonthsOfYear val ->
+				date = Icu4jHelper.plusMonths(date,1)
 				val.setValue(lmf.format(date))
-				
 			}
 		}
 	}

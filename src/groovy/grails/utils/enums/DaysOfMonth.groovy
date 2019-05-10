@@ -1,4 +1,4 @@
-package  grails.utils
+package grails.utils.enums
 
 
 import com.ibm.icu.text.NumberFormat

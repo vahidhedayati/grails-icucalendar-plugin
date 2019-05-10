@@ -1,4 +1,4 @@
-package  grails.utils
+package grails.utils.enums
 
 
 
@@ -207,7 +207,9 @@ public enum DaysOfWeek {
 	 * @param locale
 	 */
 	public static void initialiseEnumByLocale(Locale locale) {
-		ULocale ulocale = new ULocale(locale.language,locale.country,locale.variant)
+		initialiseEnumByLocale(new ULocale(locale.language,locale.country,locale.variant))
+	}
+	public static void initialiseEnumByLocale(ULocale ulocale) {
 		Calendar c = Calendar.getInstance(ulocale)
 		//1st April 2018 starts on Sunday same as our enum starting point
 		java.text.DateFormat format = new  java.text.SimpleDateFormat("dd/MM/yyyy")
@@ -228,7 +230,6 @@ public enum DaysOfWeek {
 			date++
 		}
 	}
-	
 	/**
 	 * List<String> myDays = DaysOfWeek.daysOfWeek(Locale.UK)
 	 * 
