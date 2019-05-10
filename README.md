@@ -1,3 +1,570 @@
+Below you will see:
+
+```
+  "2017": {
+        "name": "۱۳۹۶",
+```     
+        
+2017 = ۱۳۹۶  which translates to 1396 
+
+In short the conversion provides a basic template of day names mapped to locale, month names mapped to locale, then a dataSet containing the actual date range with minimal date of start day of each month to be included and its end day - with the other maps using javascript will build a front view to pick from available dates provided via the back end arrays -  
+        
+```
+	def index() {
+		
+		Icu4jHelper icuj = new Icu4jHelper(new Locale("fa","IR"),new Date(),-2,2,IncrementMethod.YEAR)
+		//Icu4jHelper icuj = new Icu4jHelper(Locale.UK,new Date(),-30,15,IncrementMethod.DAY)
+		render icuj.init()
+		
+		//render view: 'index'
+	}
+```
+	Produces:
+	
+```
+{
+  "monthsOfYear": 
+  [
+    {
+      "month": 1,
+      "value": "بهمن"
+    },
+    {
+      "month": 2,
+      "value": "اسفند"
+    },
+    {
+      "month": 3,
+      "value": "فروردین"
+    },
+    {
+      "month": 4,
+      "value": "اردیبهشت"
+    },
+    {
+      "month": 5,
+      "value": "خرداد"
+    },
+    {
+      "month": 6,
+      "value": "تیر"
+    },
+    {
+      "month": 7,
+      "value": "مرداد"
+    },
+    {
+      "month": 8,
+      "value": "شهریور"
+    },
+    {
+      "month": 9,
+      "value": "مهر"
+    },
+    {
+      "month": 10,
+      "value": "آبان"
+    },
+    {
+      "month": 11,
+      "value": "آذر"
+    },
+    {
+      "month": 12,
+      "value": "دی"
+    }
+  ],
+  "daysOfWeek": 
+  [
+    {
+      "month": 1,
+      "value": "یکشنبه"
+    },
+    {
+      "month": 2,
+      "value": "دوشنبه"
+    },
+    {
+      "month": 4,
+      "value": "سه‌شنبه"
+    },
+    {
+      "month": 8,
+      "value": "چهارشنبه"
+    },
+    {
+      "month": 16,
+      "value": "پنجشنبه"
+    },
+    {
+      "month": 32,
+      "value": "جمعه"
+    },
+    {
+      "month": 64,
+      "value": "شنبه"
+    }
+  ],
+  "daysOfMonth": 
+  [
+    {
+      "day": 1,
+      "value": "۱"
+    },
+    {
+      "day": 2,
+      "value": "۲"
+    },
+    {
+      "day": 3,
+      "value": "۳"
+    },
+    {
+      "day": 4,
+      "value": "۴"
+    },
+    {
+      "day": 5,
+      "value": "۵"
+    },
+    {
+      "day": 6,
+      "value": "۶"
+    },
+    {
+      "day": 7,
+      "value": "۷"
+    },
+    {
+      "day": 8,
+      "value": "۸"
+    },
+    {
+      "day": 9,
+      "value": "۹"
+    },
+    {
+      "day": 10,
+      "value": "۱۰"
+    },
+    {
+      "day": 11,
+      "value": "۱۱"
+    },
+    {
+      "day": 12,
+      "value": "۱۲"
+    },
+    {
+      "day": 13,
+      "value": "۱۳"
+    },
+    {
+      "day": 14,
+      "value": "۱۴"
+    },
+    {
+      "day": 15,
+      "value": "۱۵"
+    },
+    {
+      "day": 16,
+      "value": "۱۶"
+    },
+    {
+      "day": 17,
+      "value": "۱۷"
+    },
+    {
+      "day": 18,
+      "value": "۱۸"
+    },
+    {
+      "day": 19,
+      "value": "۱۹"
+    },
+    {
+      "day": 20,
+      "value": "۲۰"
+    },
+    {
+      "day": 21,
+      "value": "۲۱"
+    },
+    {
+      "day": 22,
+      "value": "۲۲"
+    },
+    {
+      "day": 23,
+      "value": "۲۳"
+    },
+    {
+      "day": 24,
+      "value": "۲۴"
+    },
+    {
+      "day": 25,
+      "value": "۲۵"
+    },
+    {
+      "day": 26,
+      "value": "۲۶"
+    },
+    {
+      "day": 27,
+      "value": "۲۷"
+    },
+    {
+      "day": 28,
+      "value": "۲۸"
+    },
+    {
+      "day": 29,
+      "value": "۲۹"
+    },
+    {
+      "day": 30,
+      "value": "۳۰"
+    },
+    {
+      "day": 31,
+      "value": "۳۱"
+    }
+  ],
+  "dataSet": 
+  [
+    {
+      "2017": {
+        "name": "۱۳۹۶",
+        "months": 
+        [
+          {
+            "month": 5,
+            "name": "خرداد",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 6,
+            "name": "تیر",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 7,
+            "name": "مرداد",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 8,
+            "name": "شهریور",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 9,
+            "name": "مهر",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 10,
+            "name": "آبان",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 11,
+            "name": "آذر",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 12,
+            "name": "دی",
+            "start": 1,
+            "end": 31
+          }
+        ]
+      },
+      "2018": {
+        "name": "۱۳۹۷",
+        "months": 
+        [
+          {
+            "month": 1,
+            "name": "بهمن",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 2,
+            "name": "اسفند",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 3,
+            "name": "فروردین",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 4,
+            "name": "اردیبهشت",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 5,
+            "name": "خرداد",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 6,
+            "name": "تیر",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 7,
+            "name": "مرداد",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 8,
+            "name": "شهریور",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 9,
+            "name": "مهر",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 10,
+            "name": "آبان",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 11,
+            "name": "آذر",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 12,
+            "name": "دی",
+            "start": 1,
+            "end": 31
+          }
+        ]
+      },
+      "2019": {
+        "name": "۱۳۹۸",
+        "months": 
+        [
+          {
+            "month": 1,
+            "name": "بهمن",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 2,
+            "name": "اسفند",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 3,
+            "name": "فروردین",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 4,
+            "name": "اردیبهشت",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 5,
+            "name": "خرداد",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 6,
+            "name": "تیر",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 7,
+            "name": "مرداد",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 8,
+            "name": "شهریور",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 9,
+            "name": "مهر",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 10,
+            "name": "آبان",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 11,
+            "name": "آذر",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 12,
+            "name": "دی",
+            "start": 1,
+            "end": 31
+          }
+        ]
+      },
+      "2020": {
+        "name": "۱۳۹۹",
+        "months": 
+        [
+          {
+            "month": 1,
+            "name": "بهمن",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 2,
+            "name": "اسفند",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 3,
+            "name": "فروردین",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 4,
+            "name": "اردیبهشت",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 5,
+            "name": "خرداد",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 6,
+            "name": "تیر",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 7,
+            "name": "مرداد",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 8,
+            "name": "شهریور",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 9,
+            "name": "مهر",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 10,
+            "name": "آبان",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 11,
+            "name": "آذر",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 12,
+            "name": "دی",
+            "start": 1,
+            "end": 31
+          }
+        ]
+      },
+      "2021": {
+        "name": "۱۴۰۰",
+        "months": 
+        [
+          {
+            "month": 1,
+            "name": "بهمن",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 2,
+            "name": "اسفند",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 3,
+            "name": "فروردین",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 4,
+            "name": "اردیبهشت",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 5,
+            "name": "خرداد",
+            "start": 1,
+            "end": 31
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+
 ```
 
 def index() {
