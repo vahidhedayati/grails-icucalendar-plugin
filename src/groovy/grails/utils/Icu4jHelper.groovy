@@ -45,7 +45,7 @@ class Icu4jHelper {
 	 * @return
 	 */
 	
-	JSON init() {
+	def init(boolean printJSON=true) {
 		//binds java locale to icu4j locale internally
 		//ulocale=convertLocale(locale)
 		
@@ -70,13 +70,16 @@ class Icu4jHelper {
 		EnumSet<MonthsOfYear> monthsOfYear = EnumSet.allOf(MonthsOfYear.class)
 		//monthsOfYear:monthsOfYear.collect{[month:it.month,value:it.value]},
 		Map results= [ dataSet:formMonth,
-			daysOfWeek:daysOfWeek.collect{[month:it.value,value:it.longName]},
+			daysOfWeek:daysOfWeek.collect{[month:it.dow,value:it.longName]},
 			daysOfMonth:daysOfMonth.collect{[day:it.dom,value:it.value]},
-			]
-		
-		JSON json = results as JSON
-		json.prettyPrint = true
-		return json
+		]
+		if (printJSON) {
+			JSON json = results as JSON
+			json.prettyPrint = true
+			return json
+		} else {
+			return results
+		}
 	}
 	
 	List getFormMonth() {
@@ -176,7 +179,7 @@ class Icu4jHelper {
 		List internalList =[]
 		monthsOfYear?.each {MonthsOfYear monthOfYear->
 			Map internalMap=[:]
-			Date currentDate = setMonthYear(input.date,monthOfYear.month,input.currentYear)
+			Date currentDate = setMonthAndYear(input.date,monthOfYear.month,input.currentYear)
 			
 			internalMap.month=monthOfYear.month
 			internalMap.name=monthOfYear.value
@@ -220,10 +223,10 @@ class Icu4jHelper {
 		
 		return internalList
 	}
-	String translateYear(Date CurrentDate) {
+	String translateYear(Date currentDate) {
 		String yearFormat='yyyy'
 		SimpleDateFormat sdf = new SimpleDateFormat(yearFormat, ulocale)
-		return sdf.format(CurrentDate)
+		return sdf.format(currentDate)
 		//NumberFormat nf = NumberFormat.getInstance(ulocale)
 		//return nf.format(sdf.format(CurrentDate) as int)
 	}
@@ -247,6 +250,12 @@ class Icu4jHelper {
 		cal.setTime(date)
 		cal.set(Calendar.DAY_OF_MONTH, 1)
 		return cal.getTime()
+	}
+	
+	Date setStartOfMonth(Date date) {
+		calendar.setTime(date)
+		calendar.set(Calendar.DAY_OF_MONTH, 1)
+		return calendar.getTime()
 	}
 	
 	int endMonthDay(Date date) {
@@ -290,6 +299,12 @@ class Icu4jHelper {
 		cal.set(Calendar.MONTH, month)
 		cal.set(Calendar.YEAR, year)
 		return new Date(cal.getTimeInMillis()).clearTime()
+	}
+	
+	Date setMonthAndYear(Date date, int month, int year) {
+		calendar.set(Calendar.MONTH, month)
+		calendar.set(Calendar.YEAR, year)
+		return new Date(calendar.getTimeInMillis()).clearTime()
 	}
 	
 	public static Date plusMonths(Date date, int months) {
