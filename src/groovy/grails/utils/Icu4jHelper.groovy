@@ -302,12 +302,11 @@ class Icu4jHelper {
 		return plusMonths(date, -months)
 	}
 	
-	public static Date endOfMonth(Date date) {
-		java.util.Calendar cal = Calendar.getInstance()
-		cal.setTime(date)
-		int endDay = endMonthDay(cal)
-		cal.set(Calendar.DAY_OF_MONTH, endDay)
-		return cal.getTime()
+	Date endOfMonth(Date date) {
+		calendar.setTime(date)
+		int endDay = endMonthDay(calendar)
+		calendar.set(Calendar.DAY_OF_MONTH, endDay)
+		return calendar.getTime()
 	}
 	
 }
