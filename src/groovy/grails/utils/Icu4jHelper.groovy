@@ -79,62 +79,90 @@ class Icu4jHelper {
 	}
 	
 	List getFormMonth() {
+		Map monthFormation = [:]
+		monthFormation.currentYear=date.format('yyyy') as int
+		monthFormation.currentMonth=date.format('MM') as int
+		monthFormation.currentDay=date.format('dd') as int
 		
-		int currentYear=date.format('YYYY') as int
-		int currentMonth=date.format('MM') as int
-		int currentDay=date.format('dd') as int
 		List results = []
 		EnumSet<MonthsOfYear> monthsOfYear=EnumSet.noneOf(MonthsOfYear.class)
 		Map resultSet=[:]
 		int reverseBy,forwardBy
+		monthFormation.date=date
 		switch(incrementMethod) {
 			case IncrementMethod.YEAR:
+				Date preDate = plusYears(date,reverseDateBy)
+				Date postDate = plusYears(date,forwardDateBy)
+				monthFormation.preYear=(preDate?.format('yyyy') as int)
+				monthFormation.preMonth=(preDate?.format('MM') as int)
+				monthFormation.preDay=(preDate?.format('dd') as int)
+				monthFormation.postYear=(postDate?.format('yyyy') as int)
+				monthFormation.postMonth=(postDate?.format('MM') as int)
+				monthFormation.postDay=(postDate?.format('dd') as int)
+				
 				reverseBy=reverseDateBy
 				forwardBy=forwardDateBy
+				
 				break
 			case IncrementMethod.MONTH:
-				reverseBy=(plusMonths(date,reverseDateBy)?.format('YYYY') as int)-currentYear
-				forwardBy=(plusMonths(date,forwardDateBy)?.format('YYYY') as int)-currentYear
+				Date preDate = plusMonths(date,reverseDateBy)
+				Date postDate = plusMonths(date,forwardDateBy)
+				monthFormation.preYear=(preDate?.format('yyyy') as int)
+				monthFormation.preMonth=(preDate?.format('MM') as int)
+				monthFormation.preDay=(preDate?.format('dd') as int)
+				monthFormation.postYear=(postDate?.format('yyyy') as int)
+				monthFormation.postMonth=(postDate?.format('MM') as int)
+				monthFormation.postDay=(postDate?.format('dd') as int)
+				
+				reverseBy=monthFormation.preYear - monthFormation.currentYear
+				forwardBy=monthFormation.postYear - monthFormation.currentYear
+				
 				if (forwardBy == 0 && reverseBy==0) {
-					
-					monthsOfYear=MonthsOfYear.getMonthsBeforeAndAfter(currentMonth,reverseDateBy,forwardDateBy)
-					List internalList=formMonths(monthsOfYear,currentYear,currentYear+1, currentMonth, currentDay)
-					resultSet."${currentYear}"=[ name: translateYear(currentDate) , months:internalList]
+					monthsOfYear=MonthsOfYear.getMonthsBeforeAndAfter(monthFormation.currentMonth,reverseDateBy,forwardDateBy)
+					List internalList=formMonths(monthsOfYear,monthFormation)
+					resultSet."${monthFormation.currentYear}"=[ name: translateYear(currentDate) , months:internalList]
 				}
 				break
 			default:
-				Date preDate = plusMonths(date,reverseDateBy)
-				Date postDate = plusMonths(date,forwardDateBy)
-				reverseBy=(preDate?.format('YYYY') as int)-currentYear
-				forwardBy=(postDate?.format('YYYY') as int)-currentYear
-				int reverseMonthBy = (preDate?.format('MM') as int)-currentMonth
-				int forwardMonthBy = (postDate?.format('MM') as int)-currentMonth
+				Date preDate = date+reverseDateBy
+				Date postDate = date+forwardDateBy
+				monthFormation.preYear=(preDate?.format('yyyy') as int)
+				monthFormation.preMonth=(preDate?.format('MM') as int)
+				monthFormation.preDay=(preDate?.format('dd') as int)
+				monthFormation.postYear=(postDate?.format('yyyy') as int)
+				monthFormation.postMonth=(postDate?.format('MM') as int)
+				monthFormation.postDay=(postDate?.format('dd') as int)
+				reverseBy=monthFormation.preYear - monthFormation.currentYear
+				forwardBy=monthFormation.postYear - monthFormation.currentYear
+				int reverseMonthBy=monthFormation.preMonth - monthFormation.currentMonth
+				int forwardMonthBy=monthFormation.postMonth - monthFormation.currentMonth
+				
 				
 				if (forwardBy == 0 && reverseBy==0) {
 					if (reverseMonthBy==0 &&forwardMonthBy==0 ) {
-						monthsOfYear.add(MonthsOfYear.byMonth(currentMonth))
+						monthsOfYear.add(MonthsOfYear.byMonth(monthFormation.currentMonth))
 					} else {
-					
-						monthsOfYear=MonthsOfYear.getMonthsBeforeAndAfter(currentMonth,reverseMonthBy,forwardMonthBy)
+				
+						monthsOfYear=MonthsOfYear.getMonthsBeforeAndAfter(monthFormation.currentMonth,reverseMonthBy,forwardMonthBy)
 					}
-					List internalList=formMonths(monthsOfYear,currentYear, currentYear+1, currentMonth, currentDay)
-					resultSet."${currentYear}"=[ name: translateYear(currentDate) , months:internalList]
+					List internalList=formMonths(monthsOfYear,monthFormation)
+					resultSet."${monthFormation.currentYear}"=[name: translateYear(currentDate) , formation:internalList, availableMonths:monthsOfYear]
 				}
 				break
 		}
 		if (reverseBy || forwardBy) {
 			(reverseBy..forwardBy)?.eachWithIndex { workingYear, i ->
 				Date currentDate = modifyDate(date,workingYear,incrementMethod)
-				int workingOnYear = currentDate.format('YYYY') as int
-				
+				int workingOnYear = currentDate.format('yyyy') as int
+				monthFormation.date=currentDate
 				if (i==0) {
-					monthsOfYear=MonthsOfYear.getAvailableMonths(currentMonth,true)
+					monthsOfYear=MonthsOfYear.getAvailableMonths(monthFormation.currentMonth,true)
 				} else if (workingYear==forwardDateBy) {
-					monthsOfYear=MonthsOfYear.getAvailableMonths(currentMonth,false)
+					monthsOfYear=MonthsOfYear.getAvailableMonths(monthFormation.currentMonth,false)
 				} else {
 					monthsOfYear=EnumSet.allOf( MonthsOfYear.class )
 				}
-				List internalList=formMonths(monthsOfYear,workingYear, currentYear, currentMonth, currentDay)
+				List internalList=formMonths(monthsOfYear,monthFormation)
 				resultSet."${workingOnYear}"=[ name: translateYear(currentDate) , months:internalList]
 			}
 		
@@ -143,19 +171,32 @@ class Icu4jHelper {
 		return results
 	}
 	
-	List formMonths(EnumSet<MonthsOfYear> monthsOfYear,int workingYear, int currentYear, int currentMonth, int currentDay) {
+	List formMonths(EnumSet<MonthsOfYear> monthsOfYear, Map input) {
 		List internalList =[]
 		monthsOfYear?.each {MonthsOfYear monthOfYear->
 			Map internalMap=[:]
+			Date currentDate = setMonthYear(input.date,monthOfYear.month,input.currentYear)
+			
 			internalMap.month=monthOfYear.month
 			internalMap.name=monthOfYear.value
 			internalMap.start=1
-			internalMap.end=endMonthDay
 			
-			if (workingYear==currentYear && monthOfYear.month==currentMonth) {
+			
+			internalMap.end=endMonthDay(currentDate)
+			
+			if (input.workingYear==input.currentYear && monthOfYear.month==input.currentMonth) {
 				internalMap.currentMonth==true
-				internalMap.currentDay=currentDay
+				internalMap.currentDay=input.currentDay
 			}
+			if (input.workingYear==input.preYear && monthOfYear.month==input.preMonth) {
+				internalMap.firstMonth==true
+				internalMap.firstDay=input.preDay
+			}
+			if (input.workingYear==input.postYear && monthOfYear.month==input.postMonth) {
+				internalMap.lastMonth==true
+				internalMap.lastDay=input.postDay
+			}
+			
 			/*
 			currentDate = setMonth(currentDate, monthOfYear.month)
 			calendar.set(Calendar.DAY_OF_MONTH, 1)
@@ -179,7 +220,7 @@ class Icu4jHelper {
 		return internalList
 	}
 	String translateYear(Date CurrentDate) {
-		String yearFormat='YYYY'
+		String yearFormat='yyyy'
 		SimpleDateFormat sdf = new SimpleDateFormat(yearFormat, ulocale)
 		return sdf.format(CurrentDate)
 		//NumberFormat nf = NumberFormat.getInstance(ulocale)
@@ -207,10 +248,10 @@ class Icu4jHelper {
 		return cal.getTime()
 	}
 	
-	public static int endMonthDay(Date date) {
-		java.util.Calendar cal = Calendar.getInstance()
-		cal.setTime(date)
-		return cal.getActualMaximum(Calendar.DAY_OF_MONTH)
+	int endMonthDay(Date date) {
+		//java.util.Calendar cal = Calendar.getInstance()
+		calendar.setTime(date)
+		return calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
 	}
 	
 	public  int getEndMonthDay() {
@@ -243,6 +284,13 @@ class Icu4jHelper {
 		cal.set(Calendar.MONTH, months)
 		return new Date(cal.getTimeInMillis()).clearTime()
 	}
+	public static Date setMonthYear(Date date, int month, int year) {
+		java.util.Calendar cal= date.toCalendar()
+		cal.set(Calendar.MONTH, month)
+		cal.set(Calendar.YEAR, year)
+		return new Date(cal.getTimeInMillis()).clearTime()
+	}
+	
 	public static Date plusMonths(Date date, int months) {
 		java.util.Calendar cal= date.toCalendar()
 		cal.add(Calendar.MONTH, months)
