@@ -45,7 +45,13 @@ class Icu4jHelper {
 	 * @return
 	 */
 	
-	def init(boolean printJSON=true) {
+	JSON init() {
+		JSON json = initMap() as JSON
+		json.prettyPrint = true
+		return json
+	}
+	
+	Map initMap() {
 		//binds java locale to icu4j locale internally
 		//ulocale=convertLocale(locale)
 		
@@ -73,13 +79,8 @@ class Icu4jHelper {
 			daysOfWeek:daysOfWeek.collect{[month:it.dow,value:it.longName]},
 			daysOfMonth:daysOfMonth.collect{[day:it.dom,value:it.value]},
 		]
-		if (printJSON) {
-			JSON json = results as JSON
-			json.prettyPrint = true
-			return json
-		} else {
-			return results
-		}
+		
+		return results
 	}
 	
 	List getFormMonth() {
@@ -87,12 +88,13 @@ class Icu4jHelper {
 		monthFormation.currentYear=date.format('yyyy') as int
 		monthFormation.currentMonth=date.format('MM') as int
 		monthFormation.currentDay=date.format('dd') as int
-		
+		monthFormation.workingYear=monthFormation.currentYear
 		List results = []
 		EnumSet<MonthsOfYear> monthsOfYear=EnumSet.noneOf(MonthsOfYear.class)
 		Map resultSet=[:]
 		int reverseBy,forwardBy
 		monthFormation.date=date
+		monthFormation.today=date.format('dd/MMM/yyyy')
 		switch(incrementMethod) {
 			case IncrementMethod.YEAR:
 				Date preDate = plusYears(date,reverseDateBy)
@@ -103,7 +105,8 @@ class Icu4jHelper {
 				monthFormation.postYear=(postDate?.format('yyyy') as int)
 				monthFormation.postMonth=(postDate?.format('MM') as int)
 				monthFormation.postDay=(postDate?.format('dd') as int)
-				
+				monthFormation.preDate=preDate.format('dd/MMM/yyyy')
+				monthFormation.postDate=postDate.format('dd/MMM/yyyy')
 				reverseBy=reverseDateBy
 				forwardBy=forwardDateBy
 				
@@ -117,12 +120,14 @@ class Icu4jHelper {
 				monthFormation.postYear=(postDate?.format('yyyy') as int)
 				monthFormation.postMonth=(postDate?.format('MM') as int)
 				monthFormation.postDay=(postDate?.format('dd') as int)
-				
+				monthFormation.preDate=preDate.format('dd/MMM/yyyy')
+				monthFormation.postDate=postDate.format('dd/MMM/yyyy')
 				reverseBy=monthFormation.preYear - monthFormation.currentYear
 				forwardBy=monthFormation.postYear - monthFormation.currentYear
 				
 				if (forwardBy == 0 && reverseBy==0) {
 					monthsOfYear=MonthsOfYear.getMonthsBeforeAndAfter(monthFormation.currentMonth,reverseDateBy,forwardDateBy)
+					//monthFormation.workingYear=monthFormation.currentYear
 					List internalList=formMonths(monthsOfYear,monthFormation)
 					resultSet."${monthFormation.currentYear}"=[ name: translateYear(currentDate) , formation:internalList]
 				}
@@ -136,6 +141,8 @@ class Icu4jHelper {
 				monthFormation.postYear=(postDate?.format('yyyy') as int)
 				monthFormation.postMonth=(postDate?.format('MM') as int)
 				monthFormation.postDay=(postDate?.format('dd') as int)
+				monthFormation.preDate=preDate.format('dd/MMM/yyyy')
+				monthFormation.postDate=postDate.format('dd/MMM/yyyy')
 				reverseBy=monthFormation.preYear - monthFormation.currentYear
 				forwardBy=monthFormation.postYear - monthFormation.currentYear
 				int reverseMonthBy=monthFormation.preMonth - monthFormation.currentMonth
@@ -149,29 +156,35 @@ class Icu4jHelper {
 				
 						monthsOfYear=MonthsOfYear.getMonthsBeforeAndAfter(monthFormation.currentMonth,reverseMonthBy,forwardMonthBy)
 					}
+					//monthFormation.workingYear=monthFormation.currentYear
 					List internalList=formMonths(monthsOfYear,monthFormation)
 					resultSet."${monthFormation.currentYear}"=[name: translateYear(currentDate) , formation:internalList]
 				}
 				break
 		}
+		boolean allMonths
 		if (reverseBy || forwardBy) {
 			(reverseBy..forwardBy)?.eachWithIndex { workingYear, i ->
 				Date currentDate = modifyDate(date,workingYear,incrementMethod)
-				int workingOnYear = currentDate.format('yyyy') as int
+				monthFormation.workingYear = currentDate.format('yyyy') as int
+				
 				monthFormation.date=currentDate
 				if (i==0) {
 					monthsOfYear=MonthsOfYear.getAvailableMonths(monthFormation.currentMonth,true)
 				} else if (workingYear==forwardDateBy) {
 					monthsOfYear=MonthsOfYear.getAvailableMonths(monthFormation.currentMonth,false)
 				} else {
+					allMonths = true
 					monthsOfYear=EnumSet.allOf( MonthsOfYear.class )
 				}
 				List internalList=formMonths(monthsOfYear,monthFormation)
-				resultSet."${workingOnYear}"=[ name: translateYear(currentDate) , formation:internalList]
+				resultSet."${monthFormation.workingYear}"=[ name: translateYear(currentDate) , formation:internalList]
 			}
 		
 		}
-		results << [availableMonths:monthsOfYear]+resultSet
+		
+		results << [availableMonths:(allMonths ? EnumSet.allOf( MonthsOfYear.class ) : monthsOfYear), today:monthFormation.today,  
+			startDate:monthFormation.preDate, endDate:monthFormation.postDate ]+resultSet
 		return results
 	}
 	
@@ -179,8 +192,8 @@ class Icu4jHelper {
 		List internalList =[]
 		monthsOfYear?.each {MonthsOfYear monthOfYear->
 			Map internalMap=[:]
-			Date currentDate = setMonthAndYear(input.date,monthOfYear.month,input.currentYear)
-			
+			Date currentDate = setMonthYear(input.date,monthOfYear.month,input.workingYear)
+			int currentYear = currentDate.format('yyyy') as int
 			internalMap.month=monthOfYear.month
 			internalMap.name=monthOfYear.value
 			internalMap.start=1
@@ -188,15 +201,15 @@ class Icu4jHelper {
 			
 			internalMap.end=endMonthDay(currentDate)
 			
-			if (input.workingYear==input.currentYear && monthOfYear.month==input.currentMonth) {
+			if (currentYear==input.currentYear && monthOfYear.month==input.currentMonth) {
 				internalMap.currentMonth==true
 				internalMap.currentDay=input.currentDay
 			}
-			if (input.workingYear==input.preYear && monthOfYear.month==input.preMonth) {
+			if (currentYear==input.preYear && monthOfYear.month==input.preMonth) {
 				internalMap.firstMonth==true
 				internalMap.firstDay=input.preDay
 			}
-			if (input.workingYear==input.postYear && monthOfYear.month==input.postMonth) {
+			if (currentYear==input.postYear && monthOfYear.month==input.postMonth) {
 				internalMap.lastMonth==true
 				internalMap.lastDay=input.postDay
 			}
