@@ -68,10 +68,11 @@ class Icu4jHelper {
 		// set up week day names per locale - this is the day names i.e. Monday in given locale
 		MonthsOfYear.initialiseEnumByLocale(ulocale)
 		EnumSet<MonthsOfYear> monthsOfYear = EnumSet.allOf(MonthsOfYear.class)
-		
-		Map results= [monthsOfYear:monthsOfYear.collect{[month:it.month,value:it.value]},
-			daysOfWeek:daysOfWeek.collect{[month:it.value,value:it.longName]},daysOfMonth:daysOfMonth.collect{[day:it.dom,value:it.value]},
-			 dataSet:formMonth]
+		//monthsOfYear:monthsOfYear.collect{[month:it.month,value:it.value]},
+		Map results= [ dataSet:formMonth,
+			daysOfWeek:daysOfWeek.collect{[month:it.value,value:it.longName]},
+			daysOfMonth:daysOfMonth.collect{[day:it.dom,value:it.value]},
+			]
 		
 		JSON json = results as JSON
 		json.prettyPrint = true
@@ -120,7 +121,7 @@ class Icu4jHelper {
 				if (forwardBy == 0 && reverseBy==0) {
 					monthsOfYear=MonthsOfYear.getMonthsBeforeAndAfter(monthFormation.currentMonth,reverseDateBy,forwardDateBy)
 					List internalList=formMonths(monthsOfYear,monthFormation)
-					resultSet."${monthFormation.currentYear}"=[ name: translateYear(currentDate) , months:internalList]
+					resultSet."${monthFormation.currentYear}"=[ name: translateYear(currentDate) , formation:internalList]
 				}
 				break
 			default:
@@ -146,7 +147,7 @@ class Icu4jHelper {
 						monthsOfYear=MonthsOfYear.getMonthsBeforeAndAfter(monthFormation.currentMonth,reverseMonthBy,forwardMonthBy)
 					}
 					List internalList=formMonths(monthsOfYear,monthFormation)
-					resultSet."${monthFormation.currentYear}"=[name: translateYear(currentDate) , formation:internalList, availableMonths:monthsOfYear]
+					resultSet."${monthFormation.currentYear}"=[name: translateYear(currentDate) , formation:internalList]
 				}
 				break
 		}
@@ -163,11 +164,11 @@ class Icu4jHelper {
 					monthsOfYear=EnumSet.allOf( MonthsOfYear.class )
 				}
 				List internalList=formMonths(monthsOfYear,monthFormation)
-				resultSet."${workingOnYear}"=[ name: translateYear(currentDate) , months:internalList]
+				resultSet."${workingOnYear}"=[ name: translateYear(currentDate) , formation:internalList]
 			}
 		
 		}
-		results << resultSet
+		results << [availableMonths:monthsOfYear]+resultSet
 		return results
 	}
 	

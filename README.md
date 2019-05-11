@@ -41,7 +41,7 @@ class TestController {
 	}
 	
 	def index2() {
-		Icu4jHelper icuj = new Icu4jHelper(new Locale("hi","IN"),new Date(),1,-2,IncrementMethod.MONTH)
+		Icu4jHelper icuj = new Icu4jHelper(new Locale("hi","IN"),new Date(),-2,1,IncrementMethod.MONTH)
 		render icuj.init()
 	}
 	
@@ -62,55 +62,88 @@ index - produces:
 
 ```
 {
-  "monthsOfYear": 
+  "dataSet": 
   [
     {
-      "month": 1,
-      "value": "January"
-    },
-    {
-      "month": 2,
-      "value": "February"
-    },
-    {
-      "month": 3,
-      "value": "March"
-    },
-    {
-      "month": 4,
-      "value": "April"
-    },
-    {
-      "month": 5,
-      "value": "May"
-    },
-    {
-      "month": 6,
-      "value": "June"
-    },
-    {
-      "month": 7,
-      "value": "July"
-    },
-    {
-      "month": 8,
-      "value": "August"
-    },
-    {
-      "month": 9,
-      "value": "September"
-    },
-    {
-      "month": 10,
-      "value": "October"
-    },
-    {
-      "month": 11,
-      "value": "November"
-    },
-    {
-      "month": 12,
-      "value": "December"
+      "availableMonths": 
+      [
+        {
+          "enumType": "grails.utils.enums.MonthsOfYear",
+          "name": "FEB"
+        },
+        {
+          "enumType": "grails.utils.enums.MonthsOfYear",
+          "name": "MAR"
+        },
+        {
+          "enumType": "grails.utils.enums.MonthsOfYear",
+          "name": "APR"
+        },
+        {
+          "enumType": "grails.utils.enums.MonthsOfYear",
+          "name": "MAY"
+        },
+        {
+          "enumType": "grails.utils.enums.MonthsOfYear",
+          "name": "JUN"
+        },
+        {
+          "enumType": "grails.utils.enums.MonthsOfYear",
+          "name": "JUL"
+        },
+        {
+          "enumType": "grails.utils.enums.MonthsOfYear",
+          "name": "AUG"
+        }
+      ],
+      "2019": {
+        "name": "2019",
+        "formation": 
+        [
+          {
+            "month": 2,
+            "name": "March",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 3,
+            "name": "April",
+            "start": 1,
+            "end": 30
+          },
+          {
+            "month": 4,
+            "name": "May",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 5,
+            "name": "June",
+            "start": 1,
+            "end": 30
+          },
+          {
+            "month": 6,
+            "name": "July",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 7,
+            "name": "August",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 8,
+            "name": "September",
+            "start": 1,
+            "end": 30
+          }
+        ]
+      }
     }
   ],
   "daysOfWeek": 
@@ -270,90 +303,6 @@ index - produces:
       "day": 31,
       "value": "31"
     }
-  ],
-  "dataSet": 
-  [
-    {
-      "2019": {
-        "name": "2019",
-        "formation": 
-        [
-          {
-            "month": 2,
-            "name": "February",
-            "start": 1,
-            "end": 31
-          },
-          {
-            "month": 3,
-            "name": "March",
-            "start": 1,
-            "end": 30
-          },
-          {
-            "month": 4,
-            "name": "April",
-            "start": 1,
-            "end": 31
-          },
-          {
-            "month": 5,
-            "name": "May",
-            "start": 1,
-            "end": 30
-          },
-          {
-            "month": 6,
-            "name": "June",
-            "start": 1,
-            "end": 31
-          },
-          {
-            "month": 7,
-            "name": "July",
-            "start": 1,
-            "end": 31
-          },
-          {
-            "month": 8,
-            "name": "August",
-            "start": 1,
-            "end": 30
-          }
-        ],
-        "availableMonths": 
-        [
-          {
-            "enumType": "grails.utils.enums.MonthsOfYear",
-            "name": "FEB"
-          },
-          {
-            "enumType": "grails.utils.enums.MonthsOfYear",
-            "name": "MAR"
-          },
-          {
-            "enumType": "grails.utils.enums.MonthsOfYear",
-            "name": "APR"
-          },
-          {
-            "enumType": "grails.utils.enums.MonthsOfYear",
-            "name": "MAY"
-          },
-          {
-            "enumType": "grails.utils.enums.MonthsOfYear",
-            "name": "JUN"
-          },
-          {
-            "enumType": "grails.utils.enums.MonthsOfYear",
-            "name": "JUL"
-          },
-          {
-            "enumType": "grails.utils.enums.MonthsOfYear",
-            "name": "AUG"
-          }
-        ]
-      }
-    }
   ]
 }
 ```
@@ -362,55 +311,58 @@ index2 produces:
 
 ```
 {
-  "monthsOfYear": 
+  "dataSet": 
   [
     {
-      "month": 1,
-      "value": "फ़रवरी"
-    },
-    {
-      "month": 2,
-      "value": "मार्च"
-    },
-    {
-      "month": 3,
-      "value": "अप्रैल"
-    },
-    {
-      "month": 4,
-      "value": "मई"
-    },
-    {
-      "month": 5,
-      "value": "जून"
-    },
-    {
-      "month": 6,
-      "value": "जुलाई"
-    },
-    {
-      "month": 7,
-      "value": "अगस्त"
-    },
-    {
-      "month": 8,
-      "value": "सितंबर"
-    },
-    {
-      "month": 9,
-      "value": "अक्तूबर"
-    },
-    {
-      "month": 10,
-      "value": "नवंबर"
-    },
-    {
-      "month": 11,
-      "value": "दिसंबर"
-    },
-    {
-      "month": 12,
-      "value": "जनवरी"
+      "availableMonths": 
+      [
+        {
+          "enumType": "grails.utils.enums.MonthsOfYear",
+          "name": "MAR"
+        },
+        {
+          "enumType": "grails.utils.enums.MonthsOfYear",
+          "name": "APR"
+        },
+        {
+          "enumType": "grails.utils.enums.MonthsOfYear",
+          "name": "MAY"
+        },
+        {
+          "enumType": "grails.utils.enums.MonthsOfYear",
+          "name": "JUN"
+        }
+      ],
+      "2019": {
+        "name": "2019",
+        "formation": 
+        [
+          {
+            "month": 3,
+            "name": "अप्रैल",
+            "start": 1,
+            "end": 30
+          },
+          {
+            "month": 4,
+            "name": "मई",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 5,
+            "name": "जून",
+            "start": 1,
+            "end": 30
+          },
+          {
+            "month": 6,
+            "name": "जुलाई",
+            "start": 1,
+            "end": 31
+          }
+        ]
+      }
     }
   ],
   "daysOfWeek": 
@@ -570,17 +522,6 @@ index2 produces:
       "day": 31,
       "value": "31"
     }
-  ],
-  "dataSet": 
-  [
-    {
-      "2019": {
-        "name": "2019",
-        "months": 
-        [
-        ]
-      }
-    }
   ]
 }
 ```
@@ -589,55 +530,356 @@ index3 produces:
 
 ```
 {
-  "monthsOfYear": 
+  "dataSet": 
   [
     {
-      "month": 1,
-      "value": "بهمن"
-    },
-    {
-      "month": 2,
-      "value": "اسفند"
-    },
-    {
-      "month": 3,
-      "value": "فروردین"
-    },
-    {
-      "month": 4,
-      "value": "اردیبهشت"
-    },
-    {
-      "month": 5,
-      "value": "خرداد"
-    },
-    {
-      "month": 6,
-      "value": "تیر"
-    },
-    {
-      "month": 7,
-      "value": "مرداد"
-    },
-    {
-      "month": 8,
-      "value": "شهریور"
-    },
-    {
-      "month": 9,
-      "value": "مهر"
-    },
-    {
-      "month": 10,
-      "value": "آبان"
-    },
-    {
-      "month": 11,
-      "value": "آذر"
-    },
-    {
-      "month": 12,
-      "value": "دی"
+      "availableMonths": 
+      [
+        {
+          "enumType": "grails.utils.enums.MonthsOfYear",
+          "name": "JAN"
+        },
+        {
+          "enumType": "grails.utils.enums.MonthsOfYear",
+          "name": "FEB"
+        },
+        {
+          "enumType": "grails.utils.enums.MonthsOfYear",
+          "name": "MAR"
+        },
+        {
+          "enumType": "grails.utils.enums.MonthsOfYear",
+          "name": "APR"
+        },
+        {
+          "enumType": "grails.utils.enums.MonthsOfYear",
+          "name": "MAY"
+        }
+      ],
+      "2017": {
+        "name": "۱۳۹۶",
+        "formation": 
+        [
+          {
+            "month": 5,
+            "name": "خرداد",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 6,
+            "name": "تیر",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 7,
+            "name": "مرداد",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 8,
+            "name": "شهریور",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 9,
+            "name": "مهر",
+            "start": 1,
+            "end": 30
+          },
+          {
+            "month": 10,
+            "name": "آبان",
+            "start": 1,
+            "end": 30
+          },
+          {
+            "month": 11,
+            "name": "آذر",
+            "start": 1,
+            "end": 30
+          },
+          {
+            "month": 12,
+            "name": "دی",
+            "start": 1,
+            "end": 30
+          }
+        ]
+      },
+      "2018": {
+        "name": "۱۳۹۷",
+        "formation": 
+        [
+          {
+            "month": 1,
+            "name": "بهمن",
+            "start": 1,
+            "end": 30
+          },
+          {
+            "month": 2,
+            "name": "اسفند",
+            "start": 1,
+            "end": 29
+          },
+          {
+            "month": 3,
+            "name": "فروردین",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 4,
+            "name": "اردیبهشت",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 5,
+            "name": "خرداد",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 6,
+            "name": "تیر",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 7,
+            "name": "مرداد",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 8,
+            "name": "شهریور",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 9,
+            "name": "مهر",
+            "start": 1,
+            "end": 30
+          },
+          {
+            "month": 10,
+            "name": "آبان",
+            "start": 1,
+            "end": 30
+          },
+          {
+            "month": 11,
+            "name": "آذر",
+            "start": 1,
+            "end": 30
+          },
+          {
+            "month": 12,
+            "name": "دی",
+            "start": 1,
+            "end": 30
+          }
+        ]
+      },
+      "2019": {
+        "name": "۱۳۹۸",
+        "formation": 
+        [
+          {
+            "month": 1,
+            "name": "بهمن",
+            "start": 1,
+            "end": 30
+          },
+          {
+            "month": 2,
+            "name": "اسفند",
+            "start": 1,
+            "end": 29
+          },
+          {
+            "month": 3,
+            "name": "فروردین",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 4,
+            "name": "اردیبهشت",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 5,
+            "name": "خرداد",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 6,
+            "name": "تیر",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 7,
+            "name": "مرداد",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 8,
+            "name": "شهریور",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 9,
+            "name": "مهر",
+            "start": 1,
+            "end": 30
+          },
+          {
+            "month": 10,
+            "name": "آبان",
+            "start": 1,
+            "end": 30
+          },
+          {
+            "month": 11,
+            "name": "آذر",
+            "start": 1,
+            "end": 30
+          },
+          {
+            "month": 12,
+            "name": "دی",
+            "start": 1,
+            "end": 30
+          }
+        ]
+      },
+      "2020": {
+        "name": "۱۳۹۹",
+        "formation": 
+        [
+          {
+            "month": 1,
+            "name": "بهمن",
+            "start": 1,
+            "end": 30
+          },
+          {
+            "month": 2,
+            "name": "اسفند",
+            "start": 1,
+            "end": 29
+          },
+          {
+            "month": 3,
+            "name": "فروردین",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 4,
+            "name": "اردیبهشت",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 5,
+            "name": "خرداد",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 6,
+            "name": "تیر",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 7,
+            "name": "مرداد",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 8,
+            "name": "شهریور",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 9,
+            "name": "مهر",
+            "start": 1,
+            "end": 30
+          },
+          {
+            "month": 10,
+            "name": "آبان",
+            "start": 1,
+            "end": 30
+          },
+          {
+            "month": 11,
+            "name": "آذر",
+            "start": 1,
+            "end": 30
+          },
+          {
+            "month": 12,
+            "name": "دی",
+            "start": 1,
+            "end": 30
+          }
+        ]
+      },
+      "2021": {
+        "name": "۱۴۰۰",
+        "formation": 
+        [
+          {
+            "month": 1,
+            "name": "بهمن",
+            "start": 1,
+            "end": 30
+          },
+          {
+            "month": 2,
+            "name": "اسفند",
+            "start": 1,
+            "end": 29
+          },
+          {
+            "month": 3,
+            "name": "فروردین",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 4,
+            "name": "اردیبهشت",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 5,
+            "name": "خرداد",
+            "start": 1,
+            "end": 31
+          }
+        ]
+      }
     }
   ],
   "daysOfWeek": 
@@ -797,335 +1039,6 @@ index3 produces:
       "day": 31,
       "value": "۳۱"
     }
-  ],
-  "dataSet": 
-  [
-    {
-      "2017": {
-        "name": "۱۳۹۶",
-        "months": 
-        [
-          {
-            "month": 5,
-            "name": "خرداد",
-            "start": 1,
-            "end": 31
-          },
-          {
-            "month": 6,
-            "name": "تیر",
-            "start": 1,
-            "end": 31
-          },
-          {
-            "month": 7,
-            "name": "مرداد",
-            "start": 1,
-            "end": 31
-          },
-          {
-            "month": 8,
-            "name": "شهریور",
-            "start": 1,
-            "end": 31
-          },
-          {
-            "month": 9,
-            "name": "مهر",
-            "start": 1,
-            "end": 30
-          },
-          {
-            "month": 10,
-            "name": "آبان",
-            "start": 1,
-            "end": 30
-          },
-          {
-            "month": 11,
-            "name": "آذر",
-            "start": 1,
-            "end": 30
-          },
-          {
-            "month": 12,
-            "name": "دی",
-            "start": 1,
-            "end": 30
-          }
-        ]
-      },
-      "2018": {
-        "name": "۱۳۹۷",
-        "months": 
-        [
-          {
-            "month": 1,
-            "name": "بهمن",
-            "start": 1,
-            "end": 30
-          },
-          {
-            "month": 2,
-            "name": "اسفند",
-            "start": 1,
-            "end": 29
-          },
-          {
-            "month": 3,
-            "name": "فروردین",
-            "start": 1,
-            "end": 31
-          },
-          {
-            "month": 4,
-            "name": "اردیبهشت",
-            "start": 1,
-            "end": 31
-          },
-          {
-            "month": 5,
-            "name": "خرداد",
-            "start": 1,
-            "end": 31
-          },
-          {
-            "month": 6,
-            "name": "تیر",
-            "start": 1,
-            "end": 31
-          },
-          {
-            "month": 7,
-            "name": "مرداد",
-            "start": 1,
-            "end": 31
-          },
-          {
-            "month": 8,
-            "name": "شهریور",
-            "start": 1,
-            "end": 31
-          },
-          {
-            "month": 9,
-            "name": "مهر",
-            "start": 1,
-            "end": 30
-          },
-          {
-            "month": 10,
-            "name": "آبان",
-            "start": 1,
-            "end": 30
-          },
-          {
-            "month": 11,
-            "name": "آذر",
-            "start": 1,
-            "end": 30
-          },
-          {
-            "month": 12,
-            "name": "دی",
-            "start": 1,
-            "end": 30
-          }
-        ]
-      },
-      "2019": {
-        "name": "۱۳۹۸",
-        "months": 
-        [
-          {
-            "month": 1,
-            "name": "بهمن",
-            "start": 1,
-            "end": 30
-          },
-          {
-            "month": 2,
-            "name": "اسفند",
-            "start": 1,
-            "end": 29
-          },
-          {
-            "month": 3,
-            "name": "فروردین",
-            "start": 1,
-            "end": 31
-          },
-          {
-            "month": 4,
-            "name": "اردیبهشت",
-            "start": 1,
-            "end": 31
-          },
-          {
-            "month": 5,
-            "name": "خرداد",
-            "start": 1,
-            "end": 31
-          },
-          {
-            "month": 6,
-            "name": "تیر",
-            "start": 1,
-            "end": 31
-          },
-          {
-            "month": 7,
-            "name": "مرداد",
-            "start": 1,
-            "end": 31
-          },
-          {
-            "month": 8,
-            "name": "شهریور",
-            "start": 1,
-            "end": 31
-          },
-          {
-            "month": 9,
-            "name": "مهر",
-            "start": 1,
-            "end": 30
-          },
-          {
-            "month": 10,
-            "name": "آبان",
-            "start": 1,
-            "end": 30
-          },
-          {
-            "month": 11,
-            "name": "آذر",
-            "start": 1,
-            "end": 30
-          },
-          {
-            "month": 12,
-            "name": "دی",
-            "start": 1,
-            "end": 30
-          }
-        ]
-      },
-      "2020": {
-        "name": "۱۳۹۹",
-        "months": 
-        [
-          {
-            "month": 1,
-            "name": "بهمن",
-            "start": 1,
-            "end": 30
-          },
-          {
-            "month": 2,
-            "name": "اسفند",
-            "start": 1,
-            "end": 29
-          },
-          {
-            "month": 3,
-            "name": "فروردین",
-            "start": 1,
-            "end": 31
-          },
-          {
-            "month": 4,
-            "name": "اردیبهشت",
-            "start": 1,
-            "end": 31
-          },
-          {
-            "month": 5,
-            "name": "خرداد",
-            "start": 1,
-            "end": 31
-          },
-          {
-            "month": 6,
-            "name": "تیر",
-            "start": 1,
-            "end": 31
-          },
-          {
-            "month": 7,
-            "name": "مرداد",
-            "start": 1,
-            "end": 31
-          },
-          {
-            "month": 8,
-            "name": "شهریور",
-            "start": 1,
-            "end": 31
-          },
-          {
-            "month": 9,
-            "name": "مهر",
-            "start": 1,
-            "end": 30
-          },
-          {
-            "month": 10,
-            "name": "آبان",
-            "start": 1,
-            "end": 30
-          },
-          {
-            "month": 11,
-            "name": "آذر",
-            "start": 1,
-            "end": 30
-          },
-          {
-            "month": 12,
-            "name": "دی",
-            "start": 1,
-            "end": 30
-          }
-        ]
-      },
-      "2021": {
-        "name": "۱۴۰۰",
-        "months": 
-        [
-          {
-            "month": 1,
-            "name": "بهمن",
-            "start": 1,
-            "end": 30
-          },
-          {
-            "month": 2,
-            "name": "اسفند",
-            "start": 1,
-            "end": 29
-          },
-          {
-            "month": 3,
-            "name": "فروردین",
-            "start": 1,
-            "end": 31
-          },
-          {
-            "month": 4,
-            "name": "اردیبهشت",
-            "start": 1,
-            "end": 31
-          },
-          {
-            "month": 5,
-            "name": "خرداد",
-            "start": 1,
-            "end": 31
-          }
-        ]
-      }
-    }
   ]
 }
 ```
@@ -1134,55 +1047,48 @@ index4 produces:
 
 ```
 {
-  "monthsOfYear": 
+  "dataSet": 
   [
     {
-      "month": 1,
-      "value": "กุมภาพันธ์"
-    },
-    {
-      "month": 2,
-      "value": "มีนาคม"
-    },
-    {
-      "month": 3,
-      "value": "เมษายน"
-    },
-    {
-      "month": 4,
-      "value": "พฤษภาคม"
-    },
-    {
-      "month": 5,
-      "value": "มิถุนายน"
-    },
-    {
-      "month": 6,
-      "value": "กรกฎาคม"
-    },
-    {
-      "month": 7,
-      "value": "สิงหาคม"
-    },
-    {
-      "month": 8,
-      "value": "กันยายน"
-    },
-    {
-      "month": 9,
-      "value": "ตุลาคม"
-    },
-    {
-      "month": 10,
-      "value": "พฤศจิกายน"
-    },
-    {
-      "month": 11,
-      "value": "ธันวาคม"
-    },
-    {
-      "month": 12,
-      "value": "มกราคม"
+      "availableMonths": 
+      [
+        {
+          "enumType": "grails.utils.enums.MonthsOfYear",
+          "name": "APR"
+        },
+        {
+          "enumType": "grails.utils.enums.MonthsOfYear",
+          "name": "MAY"
+        },
+        {
+          "enumType": "grails.utils.enums.MonthsOfYear",
+          "name": "JUN"
+        }
+      ],
+      "2019": {
+        "name": "2562",
+        "formation": 
+        [
+          {
+            "month": 4,
+            "name": "พฤษภาคม",
+            "start": 1,
+            "end": 31
+          },
+          {
+            "month": 5,
+            "name": "มิถุนายน",
+            "start": 1,
+            "end": 30
+          },
+          {
+            "month": 6,
+            "name": "กรกฎาคม",
+            "start": 1,
+            "end": 31
+          }
+        ]
+      }
     }
   ],
   "daysOfWeek": 
@@ -1341,35 +1247,6 @@ index4 produces:
     {
       "day": 31,
       "value": "31"
-    }
-  ],
-  "dataSet": 
-  [
-    {
-      "2019": {
-        "name": "2562",
-        "months": 
-        [
-          {
-            "month": 4,
-            "name": "พฤษภาคม",
-            "start": 1,
-            "end": 31
-          },
-          {
-            "month": 5,
-            "name": "มิถุนายน",
-            "start": 1,
-            "end": 30
-          },
-          {
-            "month": 6,
-            "name": "กรกฎาคม",
-            "start": 1,
-            "end": 31
-          }
-        ]
-      }
     }
   ]
 }
