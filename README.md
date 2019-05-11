@@ -1,13 +1,31 @@
-Below you will see:
+Below for index 3 you will see:
 
 ```
   "2017": {
         "name": "۱۳۹۶",
 ```     
         
-2017 = ۱۳۹۶  which translates to 1396 
+The conversion process has provided a name of ۱۳۹۶ for the year 2017 in Persian calendar. The number translates to 1396 which means it has also provided year in understood format of that locale. i.e 2017 in the west was 1396 in Iran. 
 
-In short the conversion provides a basic template of day names mapped to locale, month names mapped to locale, then a dataSet containing the actual date range with minimal date of start day of each month to be included and its end day - with the other maps using javascript will build a front view to pick from available dates provided via the back end arrays -  
+Below for index 3 In Thailand 2019 was actually 2562.
+
+```
+
+     "2019": {
+        "name": "2562",
+```     
+
+        
+
+This provides a basic JSON of :
+
+> day names mapped to locale, 
+> month names mapped to locale, 
+> dataSet:
+> -> containing the actual date range with minimal date of start day of each month to be included and its end day
+> -> available months: 
+
+Awaiting javascript to pickup json and draw out the page .. To do 
    
 
 Controller:
@@ -33,7 +51,7 @@ class TestController {
 	}
 	
 	def index4() {
-		Icu4jHelper icuj = new Icu4jHelper(new Locale("vi","VI"),new Date(),-1,1,IncrementMethod.MONTH)
+		Icu4jHelper icuj = new Icu4jHelper(new Locale("th","TH"),new Date(),-1,1,IncrementMethod.MONTH)
 		render icuj.init()
 	}
 	
@@ -1120,82 +1138,82 @@ index4 produces:
   [
     {
       "month": 1,
-      "value": "tháng 2"
+      "value": "กุมภาพันธ์"
     },
     {
       "month": 2,
-      "value": "tháng 3"
+      "value": "มีนาคม"
     },
     {
       "month": 3,
-      "value": "tháng 4"
+      "value": "เมษายน"
     },
     {
       "month": 4,
-      "value": "tháng 5"
+      "value": "พฤษภาคม"
     },
     {
       "month": 5,
-      "value": "tháng 6"
+      "value": "มิถุนายน"
     },
     {
       "month": 6,
-      "value": "tháng 7"
+      "value": "กรกฎาคม"
     },
     {
       "month": 7,
-      "value": "tháng 8"
+      "value": "สิงหาคม"
     },
     {
       "month": 8,
-      "value": "tháng 9"
+      "value": "กันยายน"
     },
     {
       "month": 9,
-      "value": "tháng 10"
+      "value": "ตุลาคม"
     },
     {
       "month": 10,
-      "value": "tháng 11"
+      "value": "พฤศจิกายน"
     },
     {
       "month": 11,
-      "value": "tháng 12"
+      "value": "ธันวาคม"
     },
     {
       "month": 12,
-      "value": "tháng 1"
+      "value": "มกราคม"
     }
   ],
   "daysOfWeek": 
   [
     {
       "month": 1,
-      "value": "Chủ Nhật"
+      "value": "วันอาทิตย์"
     },
     {
       "month": 2,
-      "value": "Thứ Hai"
+      "value": "วันจันทร์"
     },
     {
       "month": 4,
-      "value": "Thứ Ba"
+      "value": "วันอังคาร"
     },
     {
       "month": 8,
-      "value": "Thứ Tư"
+      "value": "วันพุธ"
     },
     {
       "month": 16,
-      "value": "Thứ Năm"
+      "value": "วันพฤหัสบดี"
     },
     {
       "month": 32,
-      "value": "Thứ Sáu"
+      "value": "วันศุกร์"
     },
     {
       "month": 64,
-      "value": "Thứ Bảy"
+      "value": "วันเสาร์"
     }
   ],
   "daysOfMonth": 
@@ -1329,24 +1347,24 @@ index4 produces:
   [
     {
       "2019": {
-        "name": "2019",
+        "name": "2562",
         "months": 
         [
           {
             "month": 4,
-            "name": "tháng 5",
+            "name": "พฤษภาคม",
             "start": 1,
             "end": 31
           },
           {
             "month": 5,
-            "name": "tháng 6",
+            "name": "มิถุนายน",
             "start": 1,
             "end": 30
           },
           {
             "month": 6,
-            "name": "tháng 7",
+            "name": "กรกฎาคม",
             "start": 1,
             "end": 31
           }
