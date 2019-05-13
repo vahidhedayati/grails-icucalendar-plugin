@@ -29,6 +29,15 @@ class Icu4jHelper {
 		
 	}
 	
+	Icu4jHelper(IcuBean bean) {
+		this.locale=bean.locale
+		this.date=bean.date
+		this.forwardDateBy=bean.forwardBy
+		this.reverseDateBy=bean.reverseBy
+		this.incrementMethod=bean.incrementMethod
+		this.ulocale=convertLocale(locale)
+	}
+	
 	Icu4jHelper(Locale locale, Date date, int backwardYears,int forwardYears,IncrementMethod incrementMethod) {
 		this.locale=locale
 		this.date=date
@@ -78,12 +87,13 @@ class Icu4jHelper {
 		Map results= [ dataSet:formMonth,
 			daysOfWeek:daysOfWeek.collect{[month:it.dow,value:it.longName]},
 			daysOfMonth:daysOfMonth.collect{[day:it.dom,value:it.value]},
+			monthsOfYear:monthsOfYear.collect{[month:it.month,value:it.value]}
 		]
 		
 		return results
 	}
 	
-	List getFormMonth() {
+	Map getFormMonth() {
 		Map monthFormation = [:]
 		monthFormation.currentYear=date.format('yyyy') as int
 		monthFormation.currentMonth=date.format('MM') as int
@@ -174,18 +184,19 @@ class Icu4jHelper {
 				} else if (workingYear==forwardDateBy) {
 					monthsOfYear=MonthsOfYear.getAvailableMonths(monthFormation.currentMonth,false)
 				} else {
-					allMonths = true
 					monthsOfYear=EnumSet.allOf( MonthsOfYear.class )
 				}
 				List internalList=formMonths(monthsOfYear,monthFormation)
-				resultSet."${monthFormation.workingYear}"=[ name: translateYear(currentDate) , formation:internalList]
+				//Available months move to each year block returns exact specific range per year available
+				resultSet."${monthFormation.workingYear}"=[ name: translateYear(currentDate) , availableMonths:monthsOfYear, formation:internalList]
 			}
 		
 		}
 		
-		results << [availableMonths:(allMonths ? EnumSet.allOf( MonthsOfYear.class ) : monthsOfYear), today:monthFormation.today,  
-			startDate:monthFormation.preDate, endDate:monthFormation.postDate ]+resultSet
-		return results
+		//results << resultSet //[monthData:[today:monthFormation.today,  
+			//startDate:monthFormation.preDate, endDate:monthFormation.postDate ],results:resultSet]
+		return [monthData:[today:monthFormation.today,  
+			startDate:monthFormation.preDate, endDate:monthFormation.postDate ],results:resultSet]
 	}
 	
 	List formMonths(EnumSet<MonthsOfYear> monthsOfYear, Map input) {
@@ -198,37 +209,30 @@ class Icu4jHelper {
 			internalMap.name=monthOfYear.value
 			internalMap.start=1
 			
-			
 			internalMap.end=endMonthDay(currentDate)
 			
 			if (currentYear==input.currentYear && monthOfYear.month==input.currentMonth) {
-				internalMap.currentMonth==true
-				internalMap.currentDay=input.currentDay
+				internalMap.currentMonth=true
+				internalMap.active=input.currentDay
 			}
 			if (currentYear==input.preYear && monthOfYear.month==input.preMonth) {
-				internalMap.firstMonth==true
-				internalMap.firstDay=input.preDay
+				internalMap.firstMonth=true
+				//internalMap.firstDay=input.preDay
+				internalMap.start=input.preDay
 			}
 			if (currentYear==input.postYear && monthOfYear.month==input.postMonth) {
-				internalMap.lastMonth==true
-				internalMap.lastDay=input.postDay
+				internalMap.lastMonth=true
+				//internalMap.lastDay=input.postDay
+				internalMap.end=input.postDay
 			}
 			
 			/*
 			currentDate = setMonth(currentDate, monthOfYear.month)
 			calendar.set(Calendar.DAY_OF_MONTH, 1)
 			calendar.setTime(currentDate)
-		
 			internalMap.monthStart=calendar.getTime()
 			calendar.set(Calendar.DAY_OF_MONTH, internalMap.end)
-			
 			internalMap.monthEnd=calendar.getTime()
-			
-			internalMap.month=monthOfYear.month
-			internalMap.currentYear=resultSet.year==currentYear
-			internalMap.currentMonth=monthOfYear.month==currentMonth
-				
-			internalMap.currentDay=resultSet.day==currentDay
 			*/
 			internalList << internalMap
 			//monthSet."${monthOfYear.month}"=internalMap
@@ -335,6 +339,14 @@ class Icu4jHelper {
 		int endDay = endMonthDay(calendar)
 		calendar.set(Calendar.DAY_OF_MONTH, endDay)
 		return calendar.getTime()
+	}
+	
+	public static Locale convertLocale(String language) {
+		if (language.contains('_')) {
+			List<String> lang=language.split('_')
+			return Locale.getInstance(lang[0].toLowerCase(),lang[1].toUpperCase(),'')
+		}
+		return Locale.getInstance(language,'','')
 	}
 	
 }
