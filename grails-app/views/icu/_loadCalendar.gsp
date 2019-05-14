@@ -2,7 +2,7 @@
 
 <g:set var="jsonObject" value="${icu.calendarJson(lang:"en_GB",date:(new Date()-14), reverseBy:-3, forwardBy:2 , incrementMethod:IncrementMethod.MONTH ) }" />
 	  
-	  <g:textField name="fromDate" value="${params.fromDate }"/>
+	  <g:textField name="fromDate" value="${params.fromDate }" onclick="datePicker(this.id,'date-picker');"/>
 	  
 	  <div class="date-picker"  id="cal">
 	  </div>

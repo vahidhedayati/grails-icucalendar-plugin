@@ -5,14 +5,14 @@
 
 </style>
 <body>
-<g:textField name="fromDate" value="${params.fromDate }"/>
+<g:textField name="fromDate" value="${params.fromDate }" onclick="datePicker(this.id,'date-picker');"/>
 	  
 	  <div class="date-picker"  id="cal">
 	  </div>
 
 <script>
 	
-	var jsonObject =  <%=jsonObject.encodeAsJSON()%>;
+	var jsonObject =  <%=instance.encodeAsJSON()%>;
 
 		function datePicker(divId,className) {
 			document.getElementsByClassName(className)[0].innerHTML = "";
