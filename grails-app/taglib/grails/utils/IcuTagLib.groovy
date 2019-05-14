@@ -6,11 +6,16 @@ class IcuTagLib {
 	static defaultEncodeAs = [taglib:'raw']
     static namespace='icu'
 	
+	//TODO - not even using jquery or jquery-ui will strip out and use the ui css within gsp remove all this later
 	def jqueryui={
 		out << g.render(contextPath: pluginContextPath, template:'/icu/jqueryui')
 	}
 	
-	def week = { attrs ->
+	/**
+	 * Using javascript to draw out calendar like datepicker datepicker calendar of jquery but with a big
+	 * difference - proper international date picker driven by backend icu providing base data 
+	 */
+	def calendar = { attrs ->
 		IcuBean bean = new IcuBean()
 		DataBindingUtils.bindObjectToInstance(bean, attrs)
 		bean.bindBean()
@@ -23,14 +28,14 @@ class IcuTagLib {
 		
 	}
 	
-	def weekMap ={ attrs ->
+	def calendarMap ={ attrs ->
 		IcuBean bean = new IcuBean()
 		DataBindingUtils.bindObjectToInstance(bean, attrs)
 		bean.bindBean()
 		Icu4jHelper icuj = new Icu4jHelper(bean)
 		out << icuj.initMap()
 	}
-	def weekJson ={ attrs ->
+	def calendarJson ={ attrs ->
 		IcuBean bean = new IcuBean()
 		DataBindingUtils.bindObjectToInstance(bean, attrs)
 		bean.bindBean()

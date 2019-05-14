@@ -61,8 +61,6 @@ class Icu4jHelper {
 	}
 	
 	Map initMap() {
-		//binds java locale to icu4j locale internally
-		//ulocale=convertLocale(locale)
 		
 		//sets up calendar as per locale instance depending on what type of calendar is required
 		calendar = Calendar.createInstance(ulocale)
@@ -78,14 +76,14 @@ class Icu4jHelper {
 		
 		//Collect EnumSet of days of week for given locale
 		//wealthy information such as week day name per locale and which days are considered weekend
-		EnumSet<DaysOfWeek> daysOfWeek = EnumSet.allOf(DaysOfWeek.class)
+		List<DaysOfWeek> daysOfWeek = DaysOfWeek.daysByLocale(locale)
 		
 		// set up week day names per locale - this is the day names i.e. Monday in given locale
 		MonthsOfYear.initialiseEnumByLocale(ulocale)
 		EnumSet<MonthsOfYear> monthsOfYear = EnumSet.allOf(MonthsOfYear.class)
-		//monthsOfYear:monthsOfYear.collect{[month:it.month,value:it.value]},
+
 		Map results= [ dataSet:formMonth,
-			daysOfWeek:daysOfWeek.collect{[month:it.dow,value:it.longName]},
+			daysOfWeek:daysOfWeek.collect{[dow:it.dow,value:it.longName]},
 			daysOfMonth:daysOfMonth.collect{[day:it.dom,value:it.value]},
 			monthsOfYear:monthsOfYear.collect{[month:it.month,value:it.value]}
 		]
@@ -99,7 +97,6 @@ class Icu4jHelper {
 		monthFormation.currentMonth=date.format('MM') as int
 		monthFormation.currentDay=date.format('dd') as int
 		monthFormation.workingYear=monthFormation.currentYear
-		List results = []
 		EnumSet<MonthsOfYear> monthsOfYear=EnumSet.noneOf(MonthsOfYear.class)
 		Map resultSet=[:]
 		int reverseBy,forwardBy
@@ -137,9 +134,7 @@ class Icu4jHelper {
 				
 				if (forwardBy == 0 && reverseBy==0) {
 					monthsOfYear=MonthsOfYear.getMonthsBeforeAndAfter(monthFormation.currentMonth,reverseDateBy,forwardDateBy)
-					//monthFormation.workingYear=monthFormation.currentYear
-					List internalList=formMonths(monthsOfYear,monthFormation)
-					resultSet."${monthFormation.currentYear}"=[ name: translateYear(currentDate) , formation:internalList]
+					resultSet."${monthFormation.currentYear}"=[ name: translateYear(currentDate) , formation:formMonths(monthsOfYear,monthFormation)]
 				}
 				break
 			default:
@@ -158,17 +153,13 @@ class Icu4jHelper {
 				int reverseMonthBy=monthFormation.preMonth - monthFormation.currentMonth
 				int forwardMonthBy=monthFormation.postMonth - monthFormation.currentMonth
 				
-				
 				if (forwardBy == 0 && reverseBy==0) {
 					if (reverseMonthBy==0 &&forwardMonthBy==0 ) {
 						monthsOfYear.add(MonthsOfYear.byMonth(monthFormation.currentMonth))
 					} else {
-				
 						monthsOfYear=MonthsOfYear.getMonthsBeforeAndAfter(monthFormation.currentMonth,reverseMonthBy,forwardMonthBy)
 					}
-					//monthFormation.workingYear=monthFormation.currentYear
-					List internalList=formMonths(monthsOfYear,monthFormation)
-					resultSet."${monthFormation.currentYear}"=[name: translateYear(currentDate) , formation:internalList]
+					resultSet."${monthFormation.currentYear}"=[name: translateYear(currentDate) , formation:formMonths(monthsOfYear,monthFormation)]
 				}
 				break
 		}
@@ -176,8 +167,7 @@ class Icu4jHelper {
 		if (reverseBy || forwardBy) {
 			(reverseBy..forwardBy)?.eachWithIndex { workingYear, i ->
 				Date currentDate = modifyDate(date,workingYear,incrementMethod)
-				monthFormation.workingYear = currentDate.format('yyyy') as int
-				
+				monthFormation.workingYear = currentDate.format('yyyy') as int		
 				monthFormation.date=currentDate
 				if (i==0) {
 					monthsOfYear=MonthsOfYear.getAvailableMonths(monthFormation.currentMonth,true)
@@ -186,21 +176,17 @@ class Icu4jHelper {
 				} else {
 					monthsOfYear=EnumSet.allOf( MonthsOfYear.class )
 				}
-				List internalList=formMonths(monthsOfYear,monthFormation)
 				//Available months move to each year block returns exact specific range per year available
-				resultSet."${monthFormation.workingYear}"=[ name: translateYear(currentDate) , availableMonths:monthsOfYear, formation:internalList]
+				resultSet."${monthFormation.workingYear}"=[ name: translateYear(currentDate), 
+					availableMonths:monthsOfYear.collect{[month:it.month,value:it.value]}, formation:formMonths(monthsOfYear,monthFormation)]
 			}
-		
 		}
-		
-		//results << resultSet //[monthData:[today:monthFormation.today,  
-			//startDate:monthFormation.preDate, endDate:monthFormation.postDate ],results:resultSet]
 		return [monthData:[today:monthFormation.today,  
 			startDate:monthFormation.preDate, endDate:monthFormation.postDate ],results:resultSet]
 	}
 	
-	List formMonths(EnumSet<MonthsOfYear> monthsOfYear, Map input) {
-		List internalList =[]
+	Map formMonths(EnumSet<MonthsOfYear> monthsOfYear, Map input) {
+		Map returnMap=[:]
 		monthsOfYear?.each {MonthsOfYear monthOfYear->
 			Map internalMap=[:]
 			Date currentDate = setMonthYear(input.date,monthOfYear.month,input.workingYear)
@@ -217,28 +203,28 @@ class Icu4jHelper {
 			}
 			if (currentYear==input.preYear && monthOfYear.month==input.preMonth) {
 				internalMap.firstMonth=true
-				//internalMap.firstDay=input.preDay
 				internalMap.start=input.preDay
 			}
 			if (currentYear==input.postYear && monthOfYear.month==input.postMonth) {
 				internalMap.lastMonth=true
-				//internalMap.lastDay=input.postDay
 				internalMap.end=input.postDay
 			}
 			
-			/*
+			
 			currentDate = setMonth(currentDate, monthOfYear.month)
 			calendar.set(Calendar.DAY_OF_MONTH, 1)
 			calendar.setTime(currentDate)
-			internalMap.monthStart=calendar.getTime()
-			calendar.set(Calendar.DAY_OF_MONTH, internalMap.end)
-			internalMap.monthEnd=calendar.getTime()
-			*/
-			internalList << internalMap
-			//monthSet."${monthOfYear.month}"=internalMap
+			//internalMap.monthStart=calendar.getTime()
+			internalMap.startDay = calendar.get(Calendar.DAY_OF_WEEK)
+			
+			//calendar.set(Calendar.DAY_OF_MONTH, internalMap.end)
+			//internalMap.monthEnd=calendar.getTime()
+			//internalMap.enDay = calendar.get(Calendar.DAY_OF_WEEK)
+			
+			returnMap."${monthOfYear.month}"=internalMap
 		}
 		
-		return internalList
+		return returnMap
 	}
 	String translateYear(Date currentDate) {
 		String yearFormat='yyyy'
