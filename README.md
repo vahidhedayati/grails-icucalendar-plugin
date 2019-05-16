@@ -5,6 +5,7 @@ Grails 2 : config.groovy
 grails.databinding.dateFormats = [
 	'dd MMM yyyy', 'dd MMMM yyyy','dd/MM/yyyy', 'MMddyyyy', 'yyyy-MM-dd HH:mm:ss.S', "yyyy-MM-dd'T'hh:mm:ss'Z'"
 ]
+Whilst image suggest everything is correct just spotted issue with month in output 
 ```
 ![sample image](https://raw.githubusercontent.com/vahidhedayati/grails-icucalendar-plugin/master/docs/basic-calendar-conversion-from_en_gb-to-fa_IR.png)
 
