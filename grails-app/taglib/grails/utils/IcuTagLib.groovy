@@ -6,9 +6,9 @@ class IcuTagLib {
 	static defaultEncodeAs = [taglib:'raw']
     static namespace='icu'
 	
-	//TODO - not even using jquery or jquery-ui will strip out and use the ui css within gsp remove all this later
-	def jqueryui={
-		out << g.render(contextPath: pluginContextPath, template:'/icu/jqueryui')
+
+	def addStyle={
+		out << g.render(contextPath: pluginContextPath, template:'/icu/styleCalendar')
 	}
 	
 	/**

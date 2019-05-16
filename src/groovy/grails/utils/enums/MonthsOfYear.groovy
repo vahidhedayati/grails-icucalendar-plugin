@@ -3,11 +3,9 @@ package grails.utils.enums
 
 import grails.utils.Icu4jHelper
 
-import java.util.Date
-
 import com.ibm.icu.text.SimpleDateFormat
 import com.ibm.icu.util.ULocale
-
+import com.ibm.icu.util.Calendar
 /**
  *  DaysOfMonth is a representation of each month day 
  *  which according to number formatting of icu4j the numeric presentation of that number is provided
@@ -85,12 +83,13 @@ public enum MonthsOfYear {
 	public static void initialiseEnumByLocale(ULocale ulocale) {
 		java.text.DateFormat format = new  java.text.SimpleDateFormat("dd/MM/yyyy")
 		Date date = format.parse("1/1/2018")
+		Calendar cal = Calendar.createInstance(ulocale)
 		String longMonthFormat='MMMM'
 		SimpleDateFormat lmf = new SimpleDateFormat(longMonthFormat, ulocale)
 		MonthsOfYear first = values()[0]
 		if (first.value!=lmf.format(date)) {
 			MonthsOfYear.values().each{MonthsOfYear val ->
-				date = Icu4jHelper.plusMonths(date,1)
+				date = Icu4jHelper.plusMonths(cal, date,1)
 				val.setValue(lmf.format(date))
 			}
 		}

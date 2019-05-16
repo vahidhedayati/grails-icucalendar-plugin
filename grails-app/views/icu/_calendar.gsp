@@ -5,172 +5,211 @@
 
 </style>
 <body>
-<g:textField name="fromDate" value="${params.fromDate }" onclick="datePicker(this.id,'date-picker');"/>
+<g:textField name="${bean.name}" value="${bean.currentDate?:''}"  onclick="datePicker(this.id,'date-picker');"/>
 	  
-	  <div class="date-picker"  id="cal">
-	  </div>
+<div class="date-picker"  id="cal">
+</div>
 
 <script>
-	
-	var jsonObject =  <%=instance.encodeAsJSON()%>;
+	var jsonObject =  <%=instance%>;
 
-		function datePicker(divId,className) {
-			document.getElementsByClassName(className)[0].innerHTML = "";
-			document.getElementsByClassName(className)[0].style.display = "block";
-			var header = document.createElement('div');
-			header.setAttribute('id', 'header');
-			header.classList.add('ui-datepicker-header');
-			header.classList.add('ui-widget-header');
-			header.classList.add('ui-helper-clearfix');
-			header.classList.add('ui-corner-all');
-			//var dataSet = jsonObject.dataSet;
-			
-			var header1 = document.createElement('div');
-			header1.classList.add('ui-datepicker-title');
-			header1.setAttribute('id', 'header-content');
-			var yearSelection  = drawYear(undefined)
-			var currentYear =yearSelection.year;
-			var currentMonthSelect = drawMonth(currentYear)
-			var currentMonth = currentMonthSelect.month
-			header1.appendChild(yearSelection.selection);
-			header1.appendChild(currentMonthSelect.selection);
-			
-			var header2 = document.createElement('div');
-			header2.setAttribute('id', 'calendarDays');
-			header2.appendChild(drawCalendar(currentYear,currentMonth));
-			
-			header.appendChild(header1);
-			header.appendChild(header2);
-			document.getElementsByClassName(className)['0'].appendChild(header);
-		}
+    function datePicker(divId,className) {
+        if (document.getElementsByClassName(className)[0].innerHTML.trim()==='') {
+        	var monthData = jsonObject.dataSet.monthData;
+            document.getElementsByClassName(className)[0].innerHTML = "";
+            document.getElementsByClassName(className)[0].style.display = "block";
+            var header = document.createElement('div');
+            header.setAttribute('id', 'header1');
+            header.classList.add('ui-datepicker-header');
+            //header.classList.add('ui-widget-header');
+            header.classList.add('ui-helper-clearfix');
+            header.classList.add('ui-corner-all');
+            
+            var header1 = document.createElement('div');
+            header1.classList.add('ui-datepicker-title');
+            header1.setAttribute('id', 'header-content');
+            
+            var yearSelection  = drawYear(monthData.year);
+            var currentYear =yearSelection.year;
+            var currentMonthSelect = drawMonth(currentYear , monthData.month)
+            var currentMonth = currentMonthSelect.month
+            header1.appendChild(yearSelection.selection);
+            header1.appendChild(currentMonthSelect.selection);
+            
+            var header2 = document.createElement('div');
+            header2.setAttribute('id', 'calendarDays');
+            console.log(' --'+monthData.year+' --'+ currentYear+' cn '+currentMonth)
+            header2.appendChild(drawCalendar(currentYear,monthData.month,monthData.day));
+            
+            header.appendChild(header1);
+            header.appendChild(header2);
+            document.getElementsByClassName(className)['0'].appendChild(header);
+        } else {
+        	 document.getElementsByClassName(className)[0].innerHTML = "";
+             document.getElementsByClassName(className)[0].style.display = "hidden";
+        }
+    	
+    }
 
-		function drawCalendar(currentYear,currentMonth) {
-			var calendarResults = jsonObject.dataSet.results;
-	    	var monthDays = calendarResults[currentYear].formation[currentMonth]
-	    	var weekDays = jsonObject.daysOfWeek;
-			var daysOfMonth = jsonObject.daysOfMonth;
+    function drawCalendar(currentYear,currentMonth, providedDay) {
+        var calendarResults = jsonObject.dataSet.results;
+        var monthDays = calendarResults[currentYear].formation[currentMonth]
+        var weekDays = jsonObject.daysOfWeek;
+        var daysOfMonth = jsonObject.daysOfMonth;
+        
+        var table =document.createElement('table')
+        table.classList.add('ui-datepicker-calendar');
+        table.setAttribute('id', 'calendar-content');
+        var row = table.insertRow(0); 
+        var weekMap = new Object();
+        var weekClass = new Object();
+        weekDays.forEach(function(entry,i) {
+            var cell = row.insertCell(i);
+            var className='weekDay'
+            if (entry.weekend===true) {
+                className='weekend'
+            } 
+            cell.classList.add(className);
+            cell.innerHTML = entry.value;
+            weekMap[entry.dow] = i;
+            weekClass[i] = className;
+        })
+        var monthMap = new Object();
+        daysOfMonth.forEach(function(entry) {
+            monthMap[entry.day] = entry.value;
+        })
+        var currentDay=monthDays.start;
+        var currentCellId =monthDays.startDay;
+        var rowCounter=1;
+        row = table.insertRow(rowCounter);
+        var j = 0;
+        for (var i =0;  i  <= monthDays.end; i++) {
+            if (i==0) {
+                currentDay = monthDays.start;
+                currentCellId=monthDays.startDay;
+            }
+            var cellId = weekMap[currentCellId];
+            
+            if (i==0 && cellId >0) {
+                for (var q=0;  q  < cellId; q++) {
+                    var cell = row.insertCell(q);
+                    cell.innerHTML ='';
+                    cell.classList.add(weekClass[j]);
+                    j++;
+                }
+            }
+            var cell = row.insertCell(j);
+            var dayName = monthMap[currentDay]
+            if (currentDay <= monthDays.end && dayName) {
+            	cell.innerHTML =dayName;
+            	cell.classList.add('chooseDate');
+            	if (currentDay==providedDay) {
+            		cell.classList.add('today');
+                } else {
+                	cell.classList.add(weekClass[j]);
+                }
+            	
+            	var yearName = calendarResults[currentYear].name;
+            	var monthName = monthDays.name;
+            	cell.setAttribute('data-human-date',dayName+' '+monthName+' '+yearName);
+            	cell.setAttribute('data-date',currentDay+'/'+currentMonth+'/'+currentYear);
+            }
+            if (j==6) {
+                j=0;
+                rowCounter++;
+                row = table.insertRow(rowCounter);
+                currentCellId=0;
+            } else {
+                j++;
+            }
+            currentDay++;
+            currentCellId++;
+        }
+        //div.appendChild(table);
+        return table;
+    }
 
-	    	var div =document.createElement('div')
-	    	div.innerHTML=monthDays.name
-	    	var table =document.createElement('table')
-	    	table.classList.add('ui-datepicker-calendar');
-	    	
-	    	table.setAttribute('id', 'calendar-content');
-	    	var row = table.insertRow(0); 
-	    	var weekMap = new Object();
-	    	weekDays.forEach(function(entry,i) {
-	        	var cell = row.insertCell(i);
-	        	cell.innerHTML = entry.value;
-	        	// cell.setAttribute('id', 'dow_'+entry.dow);
-	        	weekMap[entry.dow] = i;
-	    	})
-	    	var monthMap = new Object();
-	    	daysOfMonth.forEach(function(entry) {
-	    		monthMap[entry.day] = entry.value;
-	        })
-	    	var currentDay=1
-	    	var rowCounter=1
-	    	row = table.insertRow(rowCounter);
-	    	 var j = monthDays.start;
-	    		console.log(' cell'+j)
-	    	for (var i =j;  i  <= monthDays.end; i++) {
-	    		if (i==monthDays.start) {
-	            	currentDay = monthDays.startDay
-	            }
-	    		var cellId = weekMap[currentDay]
-	    		console.log(' cell'+cellId+'i > '+i+" -- j "+ j+' ends:'+ monthDays.end+' '+monthDays.name)
-	    		var cell = row.insertCell(cellId);
-	    		cell.innerHTML = monthMap[monthDays.value]
-	    		if (currentDay===7) {
-	        		rowCounter++
-	    			row = table.insertRow(rowCounter)
-	                currentDay=0
-	            }
-	    		currentDay++
-	    	}
-	    	div.appendChild(table);
-	    	return div;
-		}
+    function updateYear(currentYear) {
+        var id='header-content';
+        var header1 = document.getElementById(id);
+        header1.innerHTML = "";
+        var yearSelection  = drawYear(currentYear)
+        var currentMonthSelect = drawMonth(currentYear,undefined)
+        var currentMonth = currentMonthSelect.month
+        header1.appendChild(yearSelection.selection);
+        header1.appendChild(currentMonthSelect.selection);
+        
+        var header2 = document.getElementById('calendarDays')
+        header2.innerHTML = "";
+        header2.appendChild(drawCalendar(currentYear,currentMonth,undefined));
+        
+    }
+    function updateMonth(currentMonth) {
+        var yearSelection = document.getElementById("yearSelection");
+        var currentYear = yearSelection.options[yearSelection.selectedIndex].value;
+        var header2 = document.getElementById('calendarDays');
+        header2.innerHTML = "";
+        header2.appendChild(drawCalendar(currentYear,currentMonth,undefined));		
+    }
 
-		function updateYear(currentYear) {
-		    var id='header-content';
-		    var header1 = document.getElementById(id);
-		    header1.innerHTML = "";
-			var yearSelection  = drawYear(currentYear)
-			var currentMonthSelect = drawMonth(currentYear)
-			var currentMonth = currentMonthSelect.month
-			header1.appendChild(yearSelection.selection);
-			header1.appendChild(currentMonthSelect.selection);
-			
-			var header2 = document.getElementById('calendarDays')
-			header2.innerHTML = "";
-			header2.appendChild(drawCalendar(currentYear,currentMonth));
-			
-			//header.appendChild(header1);
-			//header.appendChild(header2);
-		}
-		function updateMonth(currentMonth) {
-			console.log(' c'+currentMonth)
-			var yearSelection = document.getElementById("yearSelection");
-			var currentYear = yearSelection.options[e.selectedIndex].value;
-			
-			/*
-		    var id='header-content';
-		    var header1 = document.getElementById(id);
-		    header1.innerHTML = "";
-			var yearSelection  = drawYear(currentYear)
-			header1.appendChild(yearSelection.selection);
-			header1.appendChild(drawMonth(currentYear));
-			*/
-		}
-
-		function drawYear(currentYear) {
-			var calendarResults = jsonObject.dataSet.results;
-			let select1 = document.createElement('select');
-			select1.setAttribute('id', 'yearSelection');
-			select1.classList.add('ui-datepicker-year');
-			select1.addEventListener('change',function() { updateYear(this.value); },false)
-			var selectedYear;
-			Object.keys(calendarResults).forEach(function(entry,i) {
-				if (i===0) {
-					selectedYear=entry
-				}
-				let option1 = document.createElement('option');
-				option1.value = entry;
-				if (currentYear == entry ) {
-					option1.setAttribute('selected', true);
-					selectedYear=entry
-				}
-				option1.innerHTML = calendarResults[entry].name;
-				select1.appendChild(option1);
-			});
-			return {selection: select1, year:selectedYear}
-		}
-	    function drawMonth(currentYear) {
-	    	var calendarResults = jsonObject.dataSet.results;
-	    	var monthResults = calendarResults[currentYear].availableMonths
-			let select2 = document.createElement('select');
-			select2.setAttribute('id', 'monthSelection');
-			select2.classList.add('ui-datepicker-year');
-			select2.addEventListener('change',function() { updateMonth(this.value); },false)
-			var selectedMonth;
-			monthResults.forEach(function(entry,i) {
-				if (i===0) {
-					selectedMonth=entry.month
-				}
-				let newElem1 = document.createElement('option');
-				newElem1.classList.add('ui-datepicker-month');
-				newElem1.value = entry.month;
-				newElem1.innerHTML = entry.value ;
-				select2.appendChild(newElem1);
-			})
-			return {selection: select2, month:selectedMonth}
-		}
-
-
-	window.onload = function() {
-
-		
-	}
+    function drawYear(currentYear) {
+        var calendarResults = jsonObject.dataSet.results;
+        let select1 = document.createElement('select');
+        select1.setAttribute('id', 'yearSelection');
+        select1.classList.add('ui-datepicker-year');
+        select1.addEventListener('change',function() { updateYear(this.value); },false);
+        var selectedYear;
+        Object.keys(calendarResults).forEach(function(entry,i) {
+            if (i===0) {
+                selectedYear=entry
+            }
+            let option1 = document.createElement('option');
+            option1.value = entry;
+            if (currentYear == entry ) {
+                option1.setAttribute('selected', true);
+                selectedYear=entry
+            }
+            option1.innerHTML = calendarResults[entry].name;
+            select1.appendChild(option1);
+        });
+        return {selection: select1, year:selectedYear}
+    }
+    
+    function drawMonth(currentYear, currentMonth) {
+        var calendarResults = jsonObject.dataSet.results;
+        var monthResults = calendarResults[currentYear].availableMonths
+        let select2 = document.createElement('select');
+        select2.setAttribute('id', 'monthSelection');
+        select2.classList.add('ui-datepicker-year');
+        select2.addEventListener('change',function() { updateMonth(this.value); },false);
+        var selectedMonth;
+        monthResults.forEach(function(entry,i) {
+            if (i===0) {
+                selectedMonth=entry.month;
+            }
+            let newElem1 = document.createElement('option');
+            newElem1.classList.add('ui-datepicker-month');
+            newElem1.value = entry.month;
+            newElem1.innerHTML = entry.value ;
+            if (currentMonth == entry.month ) {
+            	newElem1.setAttribute('selected', true);
+            	selectedMonth=entry
+            }
+            select2.appendChild(newElem1);
+        })
+        return {selection: select2, month:selectedMonth}
+    }
+    window.onload = function() {
+    	var base = document.querySelector('#calendarDatePicker');
+    	var selector = '.chooseDate';
+    	base.addEventListener('click', function(event) {
+    	  var closest = event.target.closest(selector);
+    	  if (closest && base.contains(closest)) {
+        	  document.getElementById('fromDate').value=closest.dataset.humanDate;
+        	  //document.getElementById('fromDate').value=closest.dataset.date;
+              document.getElementById('actualFromDate').value=closest.dataset.date;
+    	  }
+    	});
+    }
 </script>	  
 </body>

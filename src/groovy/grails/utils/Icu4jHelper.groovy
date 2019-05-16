@@ -15,10 +15,17 @@ class Icu4jHelper {
 
 	Date date = new Date()
 	Locale locale = Locale.UK
-	ULocale ulocale 
+	
+	Locale fromLocale
+	
+	ULocale ulocale
+	
+	ULocale fromUlocale
+	 
 	int forwardDateBy=3
 	int reverseDateBy=-3
 	Calendar calendar  // = Calendar.getInstance(convertLocale(locale))
+	Calendar fromCalendar  // = Calendar.getInstance(convertLocale(locale))
 	IncrementMethod incrementMethod
 	
 	ULocale convertLocale(Locale local) {
@@ -31,11 +38,14 @@ class Icu4jHelper {
 	
 	Icu4jHelper(IcuBean bean) {
 		this.locale=bean.locale
+		this.fromLocale=bean.fromLocale
 		this.date=bean.date
 		this.forwardDateBy=bean.forwardBy
 		this.reverseDateBy=bean.reverseBy
 		this.incrementMethod=bean.incrementMethod
+		println " ${locale} vs ${fromLocale}"
 		this.ulocale=convertLocale(locale)
+		this.fromUlocale=convertLocale(fromLocale)
 	}
 	
 	Icu4jHelper(Locale locale, Date date, int backwardYears,int forwardYears,IncrementMethod incrementMethod) {
@@ -64,7 +74,7 @@ class Icu4jHelper {
 		
 		//sets up calendar as per locale instance depending on what type of calendar is required
 		calendar = Calendar.createInstance(ulocale)
-		
+		fromCalendar = Calendar.createInstance(fromUlocale)
 		// initialise set up days of month once for given local 
 		DaysOfMonth.initialiseEnumByLocale(ulocale)
 		
@@ -83,7 +93,7 @@ class Icu4jHelper {
 		EnumSet<MonthsOfYear> monthsOfYear = EnumSet.allOf(MonthsOfYear.class)
 
 		Map results= [ dataSet:formMonth,
-			daysOfWeek:daysOfWeek.collect{[dow:it.dow,value:it.longName]},
+			daysOfWeek:daysOfWeek.collect{[dow:it.dow,value:it.longName, weekend:it.isWeekend]},
 			daysOfMonth:daysOfMonth.collect{[day:it.dom,value:it.value]},
 			monthsOfYear:monthsOfYear.collect{[month:it.month,value:it.value]}
 		]
@@ -93,19 +103,44 @@ class Icu4jHelper {
 	
 	Map getFormMonth() {
 		Map monthFormation = [:]
-		monthFormation.currentYear=date.format('yyyy') as int
-		monthFormation.currentMonth=date.format('MM') as int
-		monthFormation.currentDay=date.format('dd') as int
+		//TODO - able to convert between GregorianCalendar and other calendars / issues converting back 
+		/*
+		lang:"en_GB",  fromLang:'fa_IR', date:'1/1/1398',
+		lang:"fa_IR",  fromLang:'en_GB', date:'21/3/2019'
+		lang:"en_GB",  fromLang:'fa_IR', date:'۱/۱/۱۳۹۸', 
+		 */
+		
+		//We first set the date provided according to the locale of the given user 
+		fromCalendar.setTime(date)
+		//fromCalendar.set(date.format('yyyyy') as int,(date.format('MM') as int)-1,(date.format('dd') as int))
+		//println " ${fromCalendar.getTime()} --2  ${fromCalendar.get(Calendar.DATE)}/${fromCalendar.get(Calendar.MONTH)+1}/${fromCalendar.get(Calendar.YEAR)} "
+		calendar.setTime(fromCalendar.getTime());
+		calendar.setTimeZone(fromCalendar.getTimeZone());
+		
+		//calendar.setTime(fromCalendar.getTime())
+		calendar.set(fromCalendar.get(Calendar.YEAR),fromCalendar.get(Calendar.MONTH),fromCalendar.get(Calendar.DATE))
+		//com.ibm.icu.text.SimpleDateFormat df = new com.ibm.icu.text.SimpleDateFormat()
+		//df.applyPattern('dd/MM/yyyy')
+		
+		//date=calendar.getTime()
+		//println " ${df.format(calendar)} ${date} --2  ${calendar.get(Calendar.DATE)}/${calendar.get(Calendar.MONTH)+1}/${calendar.get(Calendar.YEAR)} "
+		
+		monthFormation.currentYear=calendar.get(Calendar.YEAR)
+		monthFormation.currentMonth=calendar.get(Calendar.MONTH)+1
+		monthFormation.currentDay=calendar.get(Calendar.DATE)
 		monthFormation.workingYear=monthFormation.currentYear
 		EnumSet<MonthsOfYear> monthsOfYear=EnumSet.noneOf(MonthsOfYear.class)
 		Map resultSet=[:]
 		int reverseBy,forwardBy
 		monthFormation.date=date
 		monthFormation.today=date.format('dd/MMM/yyyy')
+		
 		switch(incrementMethod) {
 			case IncrementMethod.YEAR:
-				Date preDate = plusYears(date,reverseDateBy)
-				Date postDate = plusYears(date,forwardDateBy)
+				Date preDate = plusYears(calendar,date,reverseDateBy)
+				Date postDate = plusYears(calendar,date,forwardDateBy)
+				//Date preDate = plusYears(reverseDateBy)
+				//Date postDate = plusYears(forwardDateBy)
 				monthFormation.preYear=(preDate?.format('yyyy') as int)
 				monthFormation.preMonth=(preDate?.format('MM') as int)
 				monthFormation.preDay=(preDate?.format('dd') as int)
@@ -119,8 +154,10 @@ class Icu4jHelper {
 				
 				break
 			case IncrementMethod.MONTH:
-				Date preDate = plusMonths(date,reverseDateBy)
-				Date postDate = plusMonths(date,forwardDateBy)
+				Date preDate = plusMonths(calendar,date,reverseDateBy)
+				Date postDate = plusMonths(calendar,date,forwardDateBy)
+				//Date preDate = plusMonths(reverseDateBy)
+				//Date postDate = plusMonths(forwardDateBy)
 				monthFormation.preYear=(preDate?.format('yyyy') as int)
 				monthFormation.preMonth=(preDate?.format('MM') as int)
 				monthFormation.preDay=(preDate?.format('dd') as int)
@@ -131,10 +168,10 @@ class Icu4jHelper {
 				monthFormation.postDate=postDate.format('dd/MMM/yyyy')
 				reverseBy=monthFormation.preYear - monthFormation.currentYear
 				forwardBy=monthFormation.postYear - monthFormation.currentYear
-				
+				monthFormation.date=date
 				if (forwardBy == 0 && reverseBy==0) {
 					monthsOfYear=MonthsOfYear.getMonthsBeforeAndAfter(monthFormation.currentMonth,reverseDateBy,forwardDateBy)
-					resultSet."${monthFormation.currentYear}"=[ name: translateYear(currentDate) , formation:formMonths(monthsOfYear,monthFormation)]
+					resultSet."${monthFormation.currentYear}"=[ name: translateYear(date) , formation:formMonths(monthsOfYear,monthFormation)]
 				}
 				break
 			default:
@@ -152,23 +189,25 @@ class Icu4jHelper {
 				forwardBy=monthFormation.postYear - monthFormation.currentYear
 				int reverseMonthBy=monthFormation.preMonth - monthFormation.currentMonth
 				int forwardMonthBy=monthFormation.postMonth - monthFormation.currentMonth
-				
+				monthFormation.date=date
 				if (forwardBy == 0 && reverseBy==0) {
 					if (reverseMonthBy==0 &&forwardMonthBy==0 ) {
 						monthsOfYear.add(MonthsOfYear.byMonth(monthFormation.currentMonth))
 					} else {
 						monthsOfYear=MonthsOfYear.getMonthsBeforeAndAfter(monthFormation.currentMonth,reverseMonthBy,forwardMonthBy)
 					}
-					resultSet."${monthFormation.currentYear}"=[name: translateYear(currentDate) , formation:formMonths(monthsOfYear,monthFormation)]
+					resultSet."${monthFormation.currentYear}"=[name: translateYear(date) , formation:formMonths(monthsOfYear,monthFormation)]
 				}
 				break
 		}
 		boolean allMonths
 		if (reverseBy || forwardBy) {
 			(reverseBy..forwardBy)?.eachWithIndex { workingYear, i ->
-				Date currentDate = modifyDate(date,workingYear,incrementMethod)
-				monthFormation.workingYear = currentDate.format('yyyy') as int		
-				monthFormation.date=currentDate
+				Date cDate = modifyDate(calendar,date,workingYear,incrementMethod)
+				//Date currentDate = modifyDate(workingYear,incrementMethod)
+				calendar.setTime(cDate)
+				monthFormation.workingYear = calendar.get(Calendar.YEAR) //cDate.format('yyyy') as int		
+				monthFormation.date=cDate
 				if (i==0) {
 					monthsOfYear=MonthsOfYear.getAvailableMonths(monthFormation.currentMonth,true)
 				} else if (workingYear==forwardDateBy) {
@@ -177,25 +216,29 @@ class Icu4jHelper {
 					monthsOfYear=EnumSet.allOf( MonthsOfYear.class )
 				}
 				//Available months move to each year block returns exact specific range per year available
-				resultSet."${monthFormation.workingYear}"=[ name: translateYear(currentDate), 
+				resultSet."${monthFormation.workingYear}"=[ name: translateYear(cDate), 
 					availableMonths:monthsOfYear.collect{[month:it.month,value:it.value]}, formation:formMonths(monthsOfYear,monthFormation)]
 			}
 		}
-		return [monthData:[today:monthFormation.today,  
+		return [monthData:[today:monthFormation.today,  year:monthFormation.currentYear,
+			month:monthFormation.currentMonth,day:monthFormation.currentDay,
 			startDate:monthFormation.preDate, endDate:monthFormation.postDate ],results:resultSet]
 	}
 	
 	Map formMonths(EnumSet<MonthsOfYear> monthsOfYear, Map input) {
 		Map returnMap=[:]
+		//21 march 1 far
 		monthsOfYear?.each {MonthsOfYear monthOfYear->
 			Map internalMap=[:]
-			Date currentDate = setMonthYear(input.date,monthOfYear.month,input.workingYear)
-			int currentYear = currentDate.format('yyyy') as int
+			int currentDay = calendar.get(Calendar.DATE) //input.date.format('dd') as int
+			calendar.set(input.workingYear,monthOfYear.month-1,currentDay)
+			Date cDate = calendar.getTime() 
+			int currentYear =calendar.get(Calendar.YEAR) // cDate.format('yyyy') as int
 			internalMap.month=monthOfYear.month
 			internalMap.name=monthOfYear.value
 			internalMap.start=1
 			
-			internalMap.end=endMonthDay(currentDate)
+			internalMap.end=endMonthDay(cDate)
 			
 			if (currentYear==input.currentYear && monthOfYear.month==input.currentMonth) {
 				internalMap.currentMonth=true
@@ -210,17 +253,9 @@ class Icu4jHelper {
 				internalMap.end=input.postDay
 			}
 			
-			
-			currentDate = setMonth(currentDate, monthOfYear.month)
-			calendar.set(Calendar.DAY_OF_MONTH, 1)
-			calendar.setTime(currentDate)
-			//internalMap.monthStart=calendar.getTime()
+			calendar.setTime(cDate)
+			calendar.set(currentYear,monthOfYear.month-1,internalMap.start)
 			internalMap.startDay = calendar.get(Calendar.DAY_OF_WEEK)
-			
-			//calendar.set(Calendar.DAY_OF_MONTH, internalMap.end)
-			//internalMap.monthEnd=calendar.getTime()
-			//internalMap.enDay = calendar.get(Calendar.DAY_OF_WEEK)
-			
 			returnMap."${monthOfYear.month}"=internalMap
 		}
 		
@@ -248,11 +283,9 @@ class Icu4jHelper {
 		return currentDateAndTime.clearTime()
 	}
 	
-	public static Date startOfMonth(Date date) {
-		java.util.Calendar cal = Calendar.getInstance()
-		cal.setTime(date)
-		cal.set(Calendar.DAY_OF_MONTH, 1)
-		return cal.getTime()
+	public Date startOfMonth(Date date) {
+		calendar.set(Calendar.DAY_OF_MONTH, 1)
+		return calendar.getTime()
 	}
 	
 	Date setStartOfMonth(Date date) {
@@ -267,57 +300,63 @@ class Icu4jHelper {
 		return calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
 	}
 	
-	public  int getEndMonthDay() {
+	int getEndMonthDay() {
 		return calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
 	}
 	
-	public static modifyDate(Date date,int value,IncrementMethod incrementMethod) {
+	public static Date modifyDate(Calendar cal, Date date,int value,IncrementMethod incrementMethod) {
 		if (incrementMethod==IncrementMethod.DAY) {
 			return date+value
 		} else {
-			java.util.Calendar cal= date.toCalendar()
+			cal.setTime(date)
+			///java.util.Calendar cal= date.toCalendar()
 			cal.add(Calendar."${incrementMethod}", value)
 			return new Date(cal.getTimeInMillis()).clearTime()
 		}
 	}
 	
+	Date modifyDate(int value,IncrementMethod incrementMethod) {
+		if (incrementMethod==IncrementMethod.DAY) {
+			return date+value
+		} else {
+			
+			calendar.add(Calendar."${incrementMethod}", value)
+			return calendar.getTime()
+		}
+	}
 	
-	public static Date plusYears(Date date, int years) {
-		java.util.Calendar cal= date.toCalendar()
+	public static Date plusYears(Calendar cal, Date date, int years) {
+		cal.setTime(date)
 		cal.add(Calendar.YEAR, years)
 		return new Date(cal.getTimeInMillis()).clearTime()
 	}
 	
-	public static Date minusYears(Date date, int years) {
-		return plusYears(date, -years)
+	public static Date minusYears(Calendar cal, Date date, int years) {
+		return plusYears(cal, date, -years)
+	}
+	Date plusYears(int years) {
+		calendar.add(Calendar.YEAR, years)
+		return calendar.getTime()
+	}
+	Date minusYears(int years) {
+		return plusYears(-years)
+	}
+	Date plusMonths(int months) {
+		calendar.add(Calendar.MONTH, months)
+		return calendar.getTime()
+	}
+	Date minusMonths( int months) {
+		return plusMonths(-months)
 	}
 	
-	public static Date setMonth(Date date, int months) {
-		java.util.Calendar cal= date.toCalendar()
-		cal.set(Calendar.MONTH, months)
-		return new Date(cal.getTimeInMillis()).clearTime()
-	}
-	public static Date setMonthYear(Date date, int month, int year) {
-		java.util.Calendar cal= date.toCalendar()
-		cal.set(Calendar.MONTH, month)
-		cal.set(Calendar.YEAR, year)
-		return new Date(cal.getTimeInMillis()).clearTime()
-	}
-	
-	Date setMonthAndYear(Date date, int month, int year) {
-		calendar.set(Calendar.MONTH, month)
-		calendar.set(Calendar.YEAR, year)
-		return new Date(calendar.getTimeInMillis()).clearTime()
-	}
-	
-	public static Date plusMonths(Date date, int months) {
-		java.util.Calendar cal= date.toCalendar()
+	public static Date plusMonths(Calendar cal, Date date, int months) {
+		cal.setTime(date)
 		cal.add(Calendar.MONTH, months)
 		return new Date(cal.getTimeInMillis()).clearTime()
 	}
 	
-	public static Date minusMonths(Date date, int months) {
-		return plusMonths(date, -months)
+	public static Date minusMonths(Calendar cal, Date date, int months) {
+		return plusMonths(cal, date, -months)
 	}
 	
 	Date endOfMonth(Date date) {
