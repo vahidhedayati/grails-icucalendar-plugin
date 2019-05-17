@@ -15,6 +15,11 @@ import com.ibm.icu.util.ULocale
 class Icu4jHelper {
 
 	Date date = new Date()
+	
+	boolean selectDate
+	
+	Date currentDate = date
+	Calendar currentCalendar //= Calendar.getInstance(convertLocale(locale))
 	Locale locale = Locale.UK
 	
 	Locale fromLocale
@@ -44,19 +49,39 @@ class Icu4jHelper {
 		this.forwardDateBy=bean.forwardBy
 		this.reverseDateBy=bean.reverseBy
 		this.incrementMethod=bean.incrementMethod
-		println " ${locale} vs ${fromLocale}"
-		this.ulocale=convertLocale(locale)
-		this.fromUlocale=convertLocale(fromLocale)
+		this.selectDate=bean.selectDate
+		generateLocaleAndCalendar()
 	}
-	
-	Icu4jHelper(Locale locale, Date date, int backwardYears,int forwardYears,IncrementMethod incrementMethod) {
+
+	Icu4jHelper(Locale locale, Locale2, Date date, int backwardYears,int forwardYears,IncrementMethod incrementMethod) {
 		this.locale=locale
+		this.fromLocale=Locale2
 		this.date=date
 		this.forwardDateBy=forwardYears
 		this.reverseDateBy=backwardYears
 		this.incrementMethod=incrementMethod
-		this.ulocale=convertLocale(locale)
+		generateLocaleAndCalendar()
 	}
+	
+	Icu4jHelper(Locale locale, Date date, int backwardYears,int forwardYears,IncrementMethod incrementMethod) {
+		this.locale=locale
+		this.fromLocale=locale
+		this.date=date
+		this.forwardDateBy=forwardYears
+		this.reverseDateBy=backwardYears
+		this.incrementMethod=incrementMethod
+		generateLocaleAndCalendar()
+	}
+	
+	void generateLocaleAndCalendar() {
+		this.ulocale=convertLocale(locale)
+		this.fromUlocale=convertLocale(fromLocale)
+		//sets up calendar as per locale instance depending on what type of calendar is required
+		this.calendar = Calendar.createInstance(ulocale)
+		this.fromCalendar = Calendar.createInstance(fromUlocale)
+		this.currentCalendar= Calendar.createInstance(ulocale)
+	}
+	
 	
 	/**
 	 * 
@@ -73,9 +98,6 @@ class Icu4jHelper {
 	
 	Map initMap() {
 		
-		//sets up calendar as per locale instance depending on what type of calendar is required
-		calendar = Calendar.createInstance(ulocale)
-		fromCalendar = Calendar.createInstance(fromUlocale)
 		// initialise set up days of month once for given local 
 		DaysOfMonth.initialiseEnumByLocale(ulocale)
 		
@@ -101,7 +123,7 @@ class Icu4jHelper {
 		 */
 		EnumSet<MonthsOfYear> monthsOfYear = MonthsOfYear.monthsByLocale(ulocale)
 		
-		Map results= [ dataSet:formMonth,
+		Map results= [ dataSet:formMonth, selectDate:selectDate,
 			daysOfWeek:daysOfWeek.collect{[dow:it.dow,value:it.longName, weekend:it.isWeekend]},
 			daysOfMonth:daysOfMonth.collect{[day:it.dom,value:it.value]},
 			monthsOfYear:monthsOfYear.collect{[month:it.month,value:it.value]}
@@ -134,9 +156,9 @@ class Icu4jHelper {
 		//date=calendar.getTime()
 		//println " ${df.format(calendar)} ${date} --2  ${calendar.get(Calendar.DATE)}/${calendar.get(Calendar.MONTH)+1}/${calendar.get(Calendar.YEAR)} "
 		
-		monthFormation.currentYear=calendar.get(Calendar.YEAR)
-		monthFormation.currentMonth=calendar.get(Calendar.MONTH)+1
-		monthFormation.currentDay=calendar.get(Calendar.DATE)
+		monthFormation.currentYear=(selectDate ? calendar.get(Calendar.YEAR) : currentCalendar.get(Calendar.YEAR))
+		monthFormation.currentMonth=(selectDate ? calendar.get(Calendar.MONTH)+1 : currentCalendar.get(Calendar.MONTH)+1)
+		monthFormation.currentDay=(selectDate ? calendar.get(Calendar.DATE) : currentCalendar.get(Calendar.DATE))
 		monthFormation.workingYear=monthFormation.currentYear
 		EnumSet<MonthsOfYear> monthsOfYear=EnumSet.noneOf(MonthsOfYear.class)
 		Map resultSet=[:]

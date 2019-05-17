@@ -1,27 +1,23 @@
 <%@ page import="grails.utils.enums.IncrementMethod" %>
 
-<style>
-
-
-</style>
 <body>
-<g:textField name="${bean.name}" value="${bean.currentDate?:''}"  onclick="datePicker(this.id,'date-picker');"/>
-	  
-<div class="date-picker"  id="cal">
-</div>
+	<g:textField name="${bean.name}" value="${bean.currentDate?:''}"  onclick="datePicker(this.id,'date-picker');"/>
+	<g:hiddenField name="actualFromDate" value="" />
+	<div id="calendarDatePicker" class="ui-datepicker ui-widget ui-widget-content ui-helper-clearfix ui-corner-all">
+	</div>
+
 
 <script>
 	var jsonObject =  <%=instance%>;
-
-    function datePicker(divId,className) {
+	function datePicker(divId,className) {
         if (document.getElementsByClassName(className)[0].innerHTML.trim()==='') {
         	var monthData = jsonObject.dataSet.monthData;
             document.getElementsByClassName(className)[0].innerHTML = "";
             document.getElementsByClassName(className)[0].style.display = "block";
+         
             var header = document.createElement('div');
-            header.setAttribute('id', 'header1');
             header.classList.add('ui-datepicker-header');
-            //header.classList.add('ui-widget-header');
+            header.classList.add('ui-widget-header');
             header.classList.add('ui-helper-clearfix');
             header.classList.add('ui-corner-all');
             
@@ -38,20 +34,21 @@
             
             var header2 = document.createElement('div');
             header2.setAttribute('id', 'calendarDays');
-            console.log(' --'+monthData.year+' --'+ currentYear+' cn '+currentMonth)
-            header2.appendChild(drawCalendar(currentYear,monthData.month,monthData.day));
+            header2.appendChild(drawCalendar(currentYear,monthData.month,monthData.day).table);
             
             header.appendChild(header1);
             header.appendChild(header2);
+            
             document.getElementsByClassName(className)['0'].appendChild(header);
         } else {
         	 document.getElementsByClassName(className)[0].innerHTML = "";
-             document.getElementsByClassName(className)[0].style.display = "hidden";
+             document.getElementsByClassName(className)[0].style.display = "none";
         }
     	
     }
 
     function drawCalendar(currentYear,currentMonth, providedDay) {
+        var currentSelection;
         var calendarResults = jsonObject.dataSet.results;
         var monthDays = calendarResults[currentYear].formation[currentMonth]
         var weekDays = jsonObject.daysOfWeek;
@@ -65,10 +62,11 @@
         var weekClass = new Object();
         weekDays.forEach(function(entry,i) {
             var cell = row.insertCell(i);
-            var className='weekDay'
+            var className='ui-datepicker-week'
             if (entry.weekend===true) {
-                className='weekend'
-            } 
+                className='ui-datepicker-week-end'
+            }
+            
             cell.classList.add(className);
             cell.innerHTML = entry.value;
             weekMap[entry.dow] = i;
@@ -103,14 +101,15 @@
             if (currentDay <= monthDays.end && dayName) {
             	cell.innerHTML =dayName;
             	cell.classList.add('chooseDate');
+            	var yearName = calendarResults[currentYear].name;
+            	var monthName = monthDays.name;
             	if (currentDay==providedDay) {
             		cell.classList.add('today');
+            		currentSelection=dayName+' '+monthName+' '+yearName;
                 } else {
                 	cell.classList.add(weekClass[j]);
                 }
-            	
-            	var yearName = calendarResults[currentYear].name;
-            	var monthName = monthDays.name;
+            	cell.classList.add('selectable');
             	cell.setAttribute('data-human-date',dayName+' '+monthName+' '+yearName);
             	cell.setAttribute('data-date',currentDay+'/'+currentMonth+'/'+currentYear);
             }
@@ -126,7 +125,7 @@
             currentCellId++;
         }
         //div.appendChild(table);
-        return table;
+        return {table:table, currentSelection:currentSelection};
     }
 
     function updateYear(currentYear) {
@@ -141,7 +140,7 @@
         
         var header2 = document.getElementById('calendarDays')
         header2.innerHTML = "";
-        header2.appendChild(drawCalendar(currentYear,currentMonth,undefined));
+        header2.appendChild(drawCalendar(currentYear,currentMonth,undefined).table);
         
     }
     function updateMonth(currentMonth) {
@@ -149,7 +148,7 @@
         var currentYear = yearSelection.options[yearSelection.selectedIndex].value;
         var header2 = document.getElementById('calendarDays');
         header2.innerHTML = "";
-        header2.appendChild(drawCalendar(currentYear,currentMonth,undefined));		
+        header2.appendChild(drawCalendar(currentYear,currentMonth,undefined).table);		
     }
 
     function drawYear(currentYear) {
@@ -200,6 +199,13 @@
         return {selection: select2, month:selectedMonth}
     }
     window.onload = function() {
+
+    	var selectDate = jsonObject.selectDate;
+    	if (selectDate===true) {
+    		var monthData = jsonObject.dataSet.monthData;
+            var calendar=drawCalendar(monthData.year,monthData.month,monthData.day)
+            document.getElementById('fromDate').value=calendar.currentSelection;
+        }
     	var base = document.querySelector('#calendarDatePicker');
     	var selector = '.chooseDate';
     	base.addEventListener('click', function(event) {
@@ -208,8 +214,10 @@
         	  document.getElementById('fromDate').value=closest.dataset.humanDate;
         	  //document.getElementById('fromDate').value=closest.dataset.date;
               document.getElementById('actualFromDate').value=closest.dataset.date;
+              document.getElementsByClassName('ui-datepicker')[0].innerHTML = "";
+              document.getElementsByClassName('ui-datepicker')[0].style.display = "none";
     	  }
     	});
     }
-</script>	  
+</script>
 </body>

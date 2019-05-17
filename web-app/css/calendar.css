@@ -1,8 +1,29 @@
-.weekend {
+
+
+.selectable {
+	cursor:pointer;
+	
+}
+.selectable:hover {
+	background-color: #9EEFEE; 
+}
+
+.ui-datepicker-week-end {
 	background-color: #FEE7CD;
 }
-.weekDay {
+.ui-datepicker-week {
 	background-color:#FAFBE4;
+}
+.ui-datepicker-week-end:hover {
+	font-weight:bold;
+	
+}
+.ui-datepicker-week:hover {
+	font-weight:bold;
+	
+}
+.ui-datepicker td:hover,.ui-datepicker tr:hover {
+    background: #9EEFEE;    
 }
 .empty {
 	background-color: #FFF;
@@ -13,10 +34,18 @@
 }
 .today {
 	font-weight:bold;
-	background-color:FFF;
+	background-color:#FFFBA4;
+}
+.today:hover {
+	font-weight:bold;
+	background-color:#FFFA44;
+}
+.active {
+	font-weight:bold;
+	padding:2px;
 }
 .ui-datepicker {
-	width: 17em;
+	width: 21em;
 	padding: .2em .2em 0;
 	display: none;
     background:#2F99B4;  
@@ -24,6 +53,7 @@
 table.ui-datepicker-calendar {
 	width: 20em;
 }
+
 .ui-datepicker .ui-datepicker-title {
 	margin: 0 2.3em;
 	line-height: 1.8em;
@@ -40,6 +70,8 @@ table.ui-datepicker-calendar {
     color:#000000;
     background:#9EEFEE;    
 }
+
+
 /*This is date TD */
 .ui-datepicker td {
 

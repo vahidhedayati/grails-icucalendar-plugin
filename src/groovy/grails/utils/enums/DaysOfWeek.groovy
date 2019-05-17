@@ -1,8 +1,6 @@
 package grails.utils.enums
 
-
-
-import com.ibm.icu.text.SimpleDateFormat
+import com.ibm.icu.text.DateFormatSymbols
 import com.ibm.icu.util.Calendar
 import com.ibm.icu.util.ULocale
 
@@ -211,6 +209,25 @@ public enum DaysOfWeek {
 	}
 	public static void initialiseEnumByLocale(ULocale ulocale) {
 		Calendar c = Calendar.getInstance(ulocale)
+		DateFormatSymbols dfs = new DateFormatSymbols(ulocale)
+		String[] weekDays = dfs.getWeekdays()
+		String[] shortWeekDays = dfs.getShortWeekdays()
+		int weekendStart = c.getWeekData().weekendOnset
+		int weekendEnd = c.getWeekData().weekendCease
+		weekDays?.eachWithIndex { weekday, i->
+			if (weekday) {
+				DaysOfWeek d  = DaysOfWeek.byDow(i)
+				d.setIsWeekend(false)
+				d.setLongName(weekday)
+				d.setShortName(shortWeekDays[i])
+				if (d.dow==weekendStart||d.dow==weekendEnd) {
+					d.setIsWeekend(true)
+				}
+			}
+			
+		}
+		
+		/*
 		//1st April 2018 starts on Sunday same as our enum starting point
 		java.text.DateFormat format = new  java.text.SimpleDateFormat("dd/MM/yyyy")
 		Date date = format.parse("1/4/2018")
@@ -218,8 +235,8 @@ public enum DaysOfWeek {
 		String longDayFormat='EEEE'
 		SimpleDateFormat sdf = new SimpleDateFormat(shortDayFormat, ulocale)
 		SimpleDateFormat ldf = new SimpleDateFormat(longDayFormat, ulocale)
-		int weekendStart = c.getWeekData().weekendOnset
-		int weekendEnd = c.getWeekData().weekendCease
+		//int weekendStart = c.getWeekData().weekendOnset
+		//int weekendEnd = c.getWeekData().weekendCease
 		DaysOfWeek.values().each{DaysOfWeek val ->
 			val.setIsWeekend(false)
 			if (val.dow==weekendStart||val.dow==weekendEnd) {
@@ -229,6 +246,7 @@ public enum DaysOfWeek {
 			val.setLongName(ldf.format(date))
 			date++
 		}
+		*/
 	}
 	/**
 	 * List<String> myDays = DaysOfWeek.daysOfWeek(Locale.UK)
