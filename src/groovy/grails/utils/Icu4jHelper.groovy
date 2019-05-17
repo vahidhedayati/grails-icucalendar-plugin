@@ -6,6 +6,7 @@ import grails.utils.enums.DaysOfWeek
 import grails.utils.enums.IncrementMethod
 import grails.utils.enums.MonthsOfYear
 
+import com.ibm.icu.text.DateFormatSymbols
 import com.ibm.icu.text.NumberFormat
 import com.ibm.icu.text.SimpleDateFormat
 import com.ibm.icu.util.Calendar
@@ -89,9 +90,17 @@ class Icu4jHelper {
 		List<DaysOfWeek> daysOfWeek = DaysOfWeek.daysByLocale(locale)
 		
 		// set up week day names per locale - this is the day names i.e. Monday in given locale
-		MonthsOfYear.initialiseEnumByLocale(ulocale)
-		EnumSet<MonthsOfYear> monthsOfYear = EnumSet.allOf(MonthsOfYear.class)
-
+		//MonthsOfYear.initialiseEnumByLocale(ulocale)
+		/**
+		 * Months must be set by locale:
+		 * Month 1 of Julian Calendar is Jan 
+		 * Month 1 of Persian calendar: https://en.wikipedia.org/wiki/Iranian_calendars Frawardīn = March Julian calendar:
+		 * 21/3/2019 = 1/1/1398 in Persian
+		 * 
+		 * This sets months up to align correctly with date conversion
+		 */
+		EnumSet<MonthsOfYear> monthsOfYear = MonthsOfYear.monthsByLocale(ulocale)
+		
 		Map results= [ dataSet:formMonth,
 			daysOfWeek:daysOfWeek.collect{[dow:it.dow,value:it.longName, weekend:it.isWeekend]},
 			daysOfMonth:daysOfMonth.collect{[day:it.dom,value:it.value]},
@@ -158,12 +167,24 @@ class Icu4jHelper {
 				Date postDate = plusMonths(calendar,date,forwardDateBy)
 				//Date preDate = plusMonths(reverseDateBy)
 				//Date postDate = plusMonths(forwardDateBy)
-				monthFormation.preYear=(preDate?.format('yyyy') as int)
-				monthFormation.preMonth=(preDate?.format('MM') as int)
-				monthFormation.preDay=(preDate?.format('dd') as int)
-				monthFormation.postYear=(postDate?.format('yyyy') as int)
-				monthFormation.postMonth=(postDate?.format('MM') as int)
-				monthFormation.postDay=(postDate?.format('dd') as int)
+				
+				calendar.setTime(preDate)
+				monthFormation.preYear=calendar.get(Calendar.YEAR)
+				monthFormation.preMonth=calendar.get(Calendar.MONTH)+1
+				monthFormation.preDay=calendar.get(Calendar.DATE)
+				
+				
+				//monthFormation.preYear=(preDate?.format('yyyy') as int)
+				//monthFormation.preMonth=(preDate?.format('MM') as int)
+				//monthFormation.preDay=(preDate?.format('dd') as int)
+				calendar.setTime(postDate)
+				monthFormation.postYear=calendar.get(Calendar.YEAR)
+				monthFormation.postMonth=calendar.get(Calendar.MONTH)+1
+				monthFormation.postDay=calendar.get(Calendar.DATE)
+				//monthFormation.postYear=(postDate?.format('yyyy') as int)
+				//monthFormation.postMonth=(postDate?.format('MM') as int)
+				//monthFormation.postDay=(postDate?.format('dd') as int)
+				
 				monthFormation.preDate=preDate.format('dd/MMM/yyyy')
 				monthFormation.postDate=postDate.format('dd/MMM/yyyy')
 				reverseBy=monthFormation.preYear - monthFormation.currentYear
@@ -177,12 +198,22 @@ class Icu4jHelper {
 			default:
 				Date preDate = date+reverseDateBy
 				Date postDate = date+forwardDateBy
+				calendar.setTime(preDate)
+				monthFormation.preYear=calendar.get(Calendar.YEAR)
+				monthFormation.preMonth=calendar.get(Calendar.MONTH)+1
+				monthFormation.preDay=calendar.get(Calendar.DATE)
+				calendar.setTime(postDate)
+				monthFormation.postYear=calendar.get(Calendar.YEAR)
+				monthFormation.postMonth=calendar.get(Calendar.MONTH)+1
+				monthFormation.postDay=calendar.get(Calendar.DATE)
+				/*
 				monthFormation.preYear=(preDate?.format('yyyy') as int)
 				monthFormation.preMonth=(preDate?.format('MM') as int)
 				monthFormation.preDay=(preDate?.format('dd') as int)
 				monthFormation.postYear=(postDate?.format('yyyy') as int)
 				monthFormation.postMonth=(postDate?.format('MM') as int)
 				monthFormation.postDay=(postDate?.format('dd') as int)
+				*/
 				monthFormation.preDate=preDate.format('dd/MMM/yyyy')
 				monthFormation.postDate=postDate.format('dd/MMM/yyyy')
 				reverseBy=monthFormation.preYear - monthFormation.currentYear

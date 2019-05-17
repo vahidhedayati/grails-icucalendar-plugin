@@ -3,9 +3,10 @@ package grails.utils.enums
 
 import grails.utils.Icu4jHelper
 
+import com.ibm.icu.text.DateFormatSymbols
 import com.ibm.icu.text.SimpleDateFormat
-import com.ibm.icu.util.ULocale
 import com.ibm.icu.util.Calendar
+import com.ibm.icu.util.ULocale
 /**
  *  DaysOfMonth is a representation of each month day 
  *  which according to number formatting of icu4j the numeric presentation of that number is provided
@@ -14,38 +15,47 @@ import com.ibm.icu.util.Calendar
  */
 public enum MonthsOfYear {
 
-	JAN(1,'January'),
-	FEB(2,'February'),
-	MAR(3,'March'),
-	APR(4,'April'),
-	MAY(5,'May'),
-	JUN(6,'June'),
-	JUL(7,'July'),
-	AUG(8,'August'),
-	SEP(9,'September'),
-	OCT(10,'October'),
-	NOV(11,'November'),
-	DEC(12,'December'),
+	MONTH1(1,'Jan','January'),
+	MONTH2(2,'Feb','February'),
+	MONTH3(3,'Mar','March'),
+	MONTH4(4,'Apr','April'),
+	MONTH5(5,'May','May'),
+	MONTH6(6,'Jun','June'),
+	MONTH7(7,'Jul','July'),
+	MONTH8(8,'Aug','August'),
+	MONTH9(9,'Sep','September'),
+	MONTH10(10,'Oct','October'),
+	MONTH11(11,'Nov','November'),
+	MONTH12(12,'Dec','December'),
 	  
     int month
 	
+	String shortName
 	String value
 	
 	
-    MonthsOfYear(int month, String monthName) {
+    MonthsOfYear(int month, String shortName, String monthName) {
         this.month=month
+		this.shortName=shortName
 		this.value=monthName	
     }
 
     public String getValue(){
         return value
     }
+	
+	public String getShortName(){
+		return shortName
+	}
     public int getDom(){
         return month
     }
 		
-	public void setValue(String s){
+	public void setShortName(String s){
 		this.value=s
+	}
+	public void setValue(String s){
+		this.shortName=s
 	}
 	
 	/**
@@ -76,6 +86,19 @@ public enum MonthsOfYear {
 				 val.month >= currentMonth &&  ((val.month-currentMonth) <= after) ) {
 				collection.add(val)
 			}
+		}
+		return collection
+	}
+	
+	public static  EnumSet<MonthsOfYear>  monthsByLocale(ULocale ulocale) {
+		DateFormatSymbols dfs = new DateFormatSymbols(ulocale)
+		String[] shortMonths = dfs.getShortMonths()
+		String[] months = dfs.getMonths()
+		EnumSet<MonthsOfYear> collection =  EnumSet.noneOf( MonthsOfYear.class )
+		values().eachWithIndex{MonthsOfYear val, i ->
+			val.setShortName(shortMonths[i])
+			val.setValue(months[i])
+			collection.add(val)
 		}
 		return collection
 	}
