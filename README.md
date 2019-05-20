@@ -27,7 +27,7 @@ Documentation
 [video demonstrating very basic stuff on youtube part 1](https://www.youtube.com/watch?v=ARFbeiKbzm8)
 
 
-#### [Examples / how to use ](https://github.com/vahidhedayati/grails-icucalendar-plugin/blob/master/example.md)
+#### [Examples / how to use ](https://github.com/vahidhedayati/grails-icucalendar-plugin/blob/master/examples.md)
 
 
 [Backend content produced for frontend ](https://github.com/vahidhedayati/grails-icucalendar-plugin/blob/master/backend-content.md)
