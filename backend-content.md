@@ -8,8 +8,25 @@ This provides a basic JSON of :
 > -> containing the actual date range with minimal date of start day of each month to be included and its end day
 > -> available months: 
 
-Awaiting javascript to pickup json and draw out the page .. To do 
-   
+         
+```
+Below for index 3 you will see:
+
+```
+  "2017": {
+        "name": "۱۳۹۶",
+```     
+        
+The conversion process has provided a name of ۱۳۹۶ for the year 2017 in Persian calendar. The number translates to 1396 which means it has also provided year in understood format of that locale. i.e 2017 in the west was 1396 in Iran. 
+
+Below for index 3 In Thailand 2019 was actually 2562.
+
+```
+
+     "2019": {
+        "name": "2562",
+```     
+
 
 Controller:
 ```groovy
