@@ -1,5 +1,7 @@
 package grails.utils
 
+import java.util.Locale;
+
 import grails.utils.enums.IncrementMethod
 import grails.validation.Validateable
 
@@ -40,6 +42,13 @@ class IcuBean {
 	//if not set by default false datepicker will open to today's calendar/date
 	boolean selectDate
 	
+	
+	Boolean popupCalendar
+	
+	boolean loadStyle
+	
+	boolean loadJqueryUi
+	
 	//The format to get date picker to select date by
 	//At the moment only supported format is this or defaulted to this
 	//String dateFormat='dd/MM/yyyy'
@@ -54,6 +63,9 @@ class IcuBean {
 		forwardBy(nullable:false)
 		incrementMethod(nullable:false)
 		name(nullable:true)
+		loadStyle(nullable:true)
+		popupCalendar(nullable:true)
+		loadJqueryUi(nullable:true)
 	}
 	static def checkLocale= { val, obj, errors ->
 		if (!val && !obj.lang)  {
@@ -65,7 +77,7 @@ class IcuBean {
 		if (lang && !locale) {
 			return Icu4jHelper.convertLocale(lang)
 		}
-		return locale
+		return locale?:Locale.UK
 	}
 	
 	Locale getFromLocale() {
@@ -77,12 +89,6 @@ class IcuBean {
 	
 	
 	def bindBean() {
-		if (lang && !locale) {
-			locale = Icu4jHelper.convertLocale(lang)
-		}
-		if (!locale) {
-			locale=Locale.UK
-		}
 		if (!date) {
 			date=new Date()
 		}
@@ -95,12 +101,13 @@ class IcuBean {
 		if (!incrementMethod){
 			incrementMethod=IncrementMethod.YEAR
 		}
+		if (popupCalendar==null) {
+			popupCalendar=true
+		}
 		if (!name){
 			name='fromDate'
 		}
 	}
 	
-	
-	
-	
+
 }

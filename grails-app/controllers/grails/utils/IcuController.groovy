@@ -8,6 +8,12 @@ class IcuController {
 		render icuj.init()
 	}
 	
+	def loadCalendar(IcuBean bean) {
+		bean.bindBean()
+		Icu4jHelper icuj = new Icu4jHelper(bean)
+		render  template:'/icu/calendar' , model: [bean:bean, jsonObject:icuj.initMap()]
+	}
+	
 	
 	
 }

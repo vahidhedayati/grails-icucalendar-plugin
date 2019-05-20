@@ -1,5 +1,27 @@
 <%@ page import="grails.utils.enums.IncrementMethod" %>
-     <g:set var="jsonObject" value="${icu.calendarJson( lang:"fa_IR",  fromLang:'en_GB', date:'21/3/2019' , selectDate:true, reverseBy:-1, forwardBy:2 , incrementMethod:IncrementMethod.YEAR ) }" />
+<!doctype html>
+<html>
+	<head>
+		<meta name="layout" content="main" />
+	
+
+<asset:stylesheet href="jquery-ui-1.9.2.custom.min.css" />
+<asset:stylesheet href="calendar.css" />
+
+	</head>
+	<body>
+	<pre>
+lang:"en_GB",  fromLang:'fa', date:'1/1/1398',
+lang:"fa_IR",  fromLang:'en', date:'21/3/2019'
+lang:"en_GB",  fromLang:'fa', date:'۱/۱/۱۳۹۸',
+
+using lang:"fa_IR",  fromLang:'en_GB', date:'21/3/2019' which converts to 1/1/1398 which is correct as shown: 
+</pre>
+
+
+
+    <g:set var="jsonObject" value="${icu.calendarJson(
+lang:"en_GB",  fromLang:'fa', date:'۱/۱/۱۳۹۸',, selectDate:true, reverseBy:-1, forwardBy:2 , incrementMethod:IncrementMethod.YEAR ) }" />
         
     <g:textField name="fromDate" value="" onclick="datePicker(this.id,'ui-datepicker');"/>
     <g:hiddenField name="actualFromDate" value="" />
@@ -7,6 +29,7 @@
     </div>
 
     <script>
+        
         var jsonObject =  <%=jsonObject%>;
     	    	
         function datePicker(divId,className) {
@@ -199,7 +222,6 @@
             return {selection: select2, month:selectedMonth}
         }
         window.onload = function() {
-
         	var selectDate = jsonObject.selectDate;
         	if (selectDate===true) {
         		var monthData = jsonObject.dataSet.monthData;
@@ -211,6 +233,7 @@
         	base.addEventListener('click', function(event) {
         	  var closest = event.target.closest(selector);
         	  if (closest && base.contains(closest)) {
+        		  //closest.classList.add('active');
             	  document.getElementById('fromDate').value=closest.dataset.humanDate;
             	  //document.getElementById('fromDate').value=closest.dataset.date;
                   document.getElementById('actualFromDate').value=closest.dataset.date;
@@ -219,4 +242,6 @@
         	  }
         	});
         }
-    </script>
+    </script>	  
+        </body>
+    </html>

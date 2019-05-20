@@ -4,6 +4,7 @@ package grails.utils.enums
 import grails.utils.Icu4jHelper
 
 import com.ibm.icu.text.DateFormatSymbols
+import com.ibm.icu.text.NumberFormat
 import com.ibm.icu.text.SimpleDateFormat
 import com.ibm.icu.util.Calendar
 import com.ibm.icu.util.ULocale
@@ -15,31 +16,43 @@ import com.ibm.icu.util.ULocale
  */
 public enum MonthsOfYear {
 
-	MONTH1(1,'Jan','January'),
-	MONTH2(2,'Feb','February'),
-	MONTH3(3,'Mar','March'),
-	MONTH4(4,'Apr','April'),
-	MONTH5(5,'May','May'),
-	MONTH6(6,'Jun','June'),
-	MONTH7(7,'Jul','July'),
-	MONTH8(8,'Aug','August'),
-	MONTH9(9,'Sep','September'),
-	MONTH10(10,'Oct','October'),
-	MONTH11(11,'Nov','November'),
-	MONTH12(12,'Dec','December'),
+	MONTH1(1,'1','Jan','January'),
+	MONTH2(2,'2','Feb','February'),
+	MONTH3(3,'3','Mar','March'),
+	MONTH4(4,'4','Apr','April'),
+	MONTH5(5,'5','May','May'),
+	MONTH6(6,'6','Jun','June'),
+	MONTH7(7,'7','Jul','July'),
+	MONTH8(8,'8','Aug','August'),
+	MONTH9(9,'9','Sep','September'),
+	MONTH10(10,'10','Oct','October'),
+	MONTH11(11,'11','Nov','November'),
+	MONTH12(12,'12','Dec','December'),
 	  
     int month
+	/**
+	 * This looks rather pointless since numeric month number 1 = 1 in string as well
+	 * but in different locales 1 is presented sometimes in a String format :
+	 * Arabic 1 = ۱ which isn't numeric but a string unicode character. 
+	 */
+	String monthNumber
 	
 	String shortName
 	String value
 	
 	
-    MonthsOfYear(int month, String shortName, String monthName) {
+    MonthsOfYear(int month, String monthNumber, String shortName, String monthName) {
+		this.monthNumber=monthNumber
         this.month=month
 		this.shortName=shortName
 		this.value=monthName	
     }
-
+	
+	public String getMonthNumber(){
+		return monthNumber
+	}
+	
+	
     public String getValue(){
         return value
     }
@@ -56,6 +69,10 @@ public enum MonthsOfYear {
 	}
 	public void setValue(String s){
 		this.shortName=s
+	}
+	
+	public void setMonthNumber(String s){
+		this.monthNumber=s
 	}
 	
 	/**
@@ -109,11 +126,13 @@ public enum MonthsOfYear {
 		Calendar cal = Calendar.createInstance(ulocale)
 		String longMonthFormat='MMMM'
 		SimpleDateFormat lmf = new SimpleDateFormat(longMonthFormat, ulocale)
+		NumberFormat nf = NumberFormat.getInstance(ulocale)
 		MonthsOfYear first = values()[0]
 		if (first.value!=lmf.format(date)) {
 			MonthsOfYear.values().each{MonthsOfYear val ->
 				date = Icu4jHelper.plusMonths(cal, date,1)
 				val.setValue(lmf.format(date))
+				val.setMonthNumber(nf.format(val.month))
 			}
 		}
 	}
@@ -127,6 +146,15 @@ public enum MonthsOfYear {
 	
 	static MonthsOfYear byMonth(int val) {
 		return values().find { it.month == val }
+	}
+	
+	static MonthsOfYear byMonthNumber(String val) {
+		return values().find { it.monthNumber == val }
+	}
+	
+	static MonthsOfYear byMonthNumber(Locale locale, String val) {
+		initialiseEnumByLocale(locale)
+		return values().find { it.monthNumber == val }
 	}
 	
 	static MonthsOfYear byDom(Locale locale, int val) {
