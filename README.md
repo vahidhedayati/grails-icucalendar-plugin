@@ -2,7 +2,11 @@
 icucalendar
 =========
 
-Grails icucalendar plugin using ICU4J libraries to work out internationl calendar and providing a datepicker 
+Grails icucalendar plugin using ICU4J libraries to work out international calendar / datepicker.
+ 
+> Converts a date between locale / calendars 
+> Can be run within modal dialog or pure javascript "no popup window"
+
 
 Dependency Grails 2:
 
