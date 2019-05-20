@@ -1,31 +1,30 @@
-Grails 2 : config.groovy
 
+icucalendar
+=========
 
+Grails icucalendar plugin using ICU4J libraries to work out internationl calendar and providing a datepicker 
+
+Dependency Grails 2:
+
+```groovy
+	compile ":icucalendar:0.1"
 ```
-grails.databinding.dateFormats = [
-	'dd MMM yyyy', 'dd MMMM yyyy','dd/MM/yyyy', 'MMddyyyy', 'yyyy-MM-dd HH:mm:ss.S', "yyyy-MM-dd'T'hh:mm:ss'Z'"
-] 
-```
 
+[Grails 2 source](https://github.com/vahidhedayati/grails-icucalendar-plugin/tree/grails2)
+
+Dependency Grails 3 (build.gradle):
+
+```groovy
+	compile "org.grails.plugins:icucalendar:0.1"
+```
+[Grails 3 source](https://github.com/vahidhedayati/grails-icucalendar-plugin)
+	
+
+Documentation
+---
 ![sample image](https://raw.githubusercontent.com/vahidhedayati/grails-icucalendar-plugin/master/docs/basic-calendar-conversion-from_en_gb-to-fa_IR.png)
 
 [video demonstrating very basic stuff on youtube part 1](https://www.youtube.com/watch?v=ARFbeiKbzm8)
-
-
-Grails 3:
-```
-grails:
-  databinding:
-    dateFormats:
-      - 'dd MMM yyyy'
-      - 'dd MMMM yyyy'
-      - 'dd/MM/yyyy'
-      - 'dd/MM/yyyy HH:mm:ss'
-      - 'yyyy-MM-dd HH:mm:ss.S'
-      - "yyyy-MM-dd'T'hh:mm:ss'Z'"
-      - "yyyy-MM-dd HH:mm:ss.S z"
-      - "yyyy-MM-dd'T'HH:mm:ssX"
-
 
 
 #### [Examples / how to use ](https://github.com/vahidhedayati/grails-icucalendar-plugin/blob/master/example.md)
