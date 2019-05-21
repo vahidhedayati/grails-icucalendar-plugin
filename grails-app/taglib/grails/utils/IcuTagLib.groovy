@@ -1,10 +1,9 @@
 package grails.utils
 
-import grails.converters.JSON
 
 import java.util.concurrent.atomic.AtomicInteger
 
-import org.codehaus.groovy.grails.web.binding.DataBindingUtils
+import grails.web.databinding.DataBindingUtils
 
 class IcuTagLib {
 	static defaultEncodeAs = [taglib:'raw']

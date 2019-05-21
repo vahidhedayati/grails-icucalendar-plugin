@@ -1,10 +1,13 @@
-package grails.utils
+package utils
+
+import grails.utils.Icu4jHelper
+import grails.utils.IcuBean
 
 class IcuController {
 
 	def index(IcuBean bean) {
 		bean.bindBean()
-		Icu4jHelper icuj = new Icu4jHelper(bean)
+        Icu4jHelper icuj = new Icu4jHelper(bean)
 		render icuj.init()
 	}
 	

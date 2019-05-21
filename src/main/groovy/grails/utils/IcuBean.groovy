@@ -1,12 +1,9 @@
 package grails.utils
 
-import java.util.Locale;
-
 import grails.utils.enums.IncrementMethod
 import grails.validation.Validateable
 
-@Validateable
-class IcuBean {
+class IcuBean implements Validateable {
 	
 	/**
 	 * This is the from Language / from locale of given date
