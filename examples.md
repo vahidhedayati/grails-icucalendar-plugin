@@ -178,6 +178,21 @@
 	  popupCalendar="${true}" 
 	  incrementMethod="${IncrementMethod.YEAR}" />
 	  
+	  
+	  
+	  	  <br/>
+	  	Russian Date
+	  
+	  <icu:calendar name="ruDate" fromLang='en' lang="ru"   
+	  date='21/3/2019'
+	  selectDate="${true}" 
+	  reverseBy="${-1}" 
+	  
+	  forwardBy="${2}"
+	  popupCalendar="${true}" 
+	  incrementMethod="${IncrementMethod.YEAR}" />
+	  
+	  
 	 </body>
 </html>
 

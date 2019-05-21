@@ -30,6 +30,9 @@ Documentation
 
 [video demonstrating very basic stuff on youtube part 1](https://www.youtube.com/watch?v=ARFbeiKbzm8)
 
+[video demonstrating fixes found on part 1 + update another date based on first picked youtube part 2](https://www.youtube.com/watch?v=vxVZmFvGfwM)
+
+
 
 #### [Examples / how to use ](https://github.com/vahidhedayati/grails-icucalendar-plugin/blob/master/examples.md)
 
