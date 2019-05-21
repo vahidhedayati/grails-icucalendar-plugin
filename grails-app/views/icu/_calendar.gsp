@@ -52,8 +52,6 @@ function getDialog() {
 		},
 		close: function(event, ui) {
 			$(this).dialog("close");
-	     	//$(this).dialog("destroy");
-	     	//$(this).hide();
 		}
 	});
 	
@@ -63,12 +61,12 @@ getDialog();
 function datePickerPopup_${bean.name}(divId) {
 	//close all dialog boxes
 	$(".ui-dialog-content").dialog("close");
+	//open up dialog
 	$( "#datePickerDialog_${bean.name}").dialog('open')
+	
+	//call calendar.js.datePicker(currentDivId)
 	icu4jCalendar_${bean.name}.datePicker(divId);
 }
-$('.ui-dialog-titlebar-close').on('click',function() {
-	 $("#datePickerDialog_${bean.name}").dialog("close");
-})
 </g:if>
 
 
@@ -88,16 +86,52 @@ var selector${bean.name} = '.chooseDate_${bean.name}';
 base${bean.name}.addEventListener('click', function(event) {
 var closest${bean.name} = event.target.closest(selector${bean.name});
 if (closest${bean.name} && base${bean.name}.contains(closest${bean.name})) {
- 
 	document.getElementById('${bean.name}').value=closest${bean.name}.dataset.humanDate;
-  //document.getElementById('fromDate').value=closest.dataset.date;
-     document.getElementById('${bean.name}Real').value=closest${bean.name}.dataset.date;
-     document.getElementsByClassName('${bean.name}_dpo')[0].innerHTML = "";
-     document.getElementsByClassName('${bean.name}_dpo')[0].style.display = "none";
-     <g:if test="${bean.popupCalendar}">
-     getDialog();
-     $("#datePickerDialog_${bean.name}").dialog("close");
-         </g:if>
+    document.getElementById('${bean.name}Real').value=closest${bean.name}.dataset.date;
+    document.getElementById('${bean.name}Alternative').value=closest${bean.name}.dataset.alternativeDate;
+    document.getElementsByClassName('${bean.name}_dpo')[0].innerHTML = "";
+    document.getElementsByClassName('${bean.name}_dpo')[0].style.display = "none";
+    icu4jCalendar_${bean.name}.jsonObject.dataSet.monthData.month=closest${bean.name}.dataset.currentMonth
+	icu4jCalendar_${bean.name}.jsonObject.dataSet.monthData.year=closest${bean.name}.dataset.currentYear
+	icu4jCalendar_${bean.name}.jsonObject.dataSet.monthData.day=closest${bean.name}.dataset.currentDay
+		
+	// Below checks through any iterations that needs to be updated and attempts to set as an example:
+	// toDate = fromDate value when fromDate is selected it needs a few options to be enabled 
+    <g:if test="${bean.popupCalendar}">
+      <g:if test="${bean.updateSelectionFor}">
+	   		<g:each in="${bean.updateSelectionFor}" var="fieldName">
+	   			 <g:if test="${bean.updateOnlyIfEmpty}">
+	   			 	if (icu4jCalendar_${fieldName}.jsonObject.selectDate===false ) {
+	   			 		//document.getElementById('${fieldName}').setAttribute('data-current-year',closest${bean.name}.dataset.currentYear);
+	   					//document.getElementById('${fieldName}').setAttribute('data-current-month',closest${bean.name}.dataset.currentMonth);
+	   					//document.getElementById('${fieldName}').setAttribute('data-current-day',closest${bean.name}.dataset.currentDay);
+	   					//document.getElementById('${fieldName}').setAttribute('data-select-date',true);
+	   			 		//icu4jCalendar_${fieldName}.jsonObject.selectDate=true
+		   				icu4jCalendar_${fieldName}.jsonObject.dataSet.monthData.month=closest${bean.name}.dataset.currentMonth
+		   				icu4jCalendar_${fieldName}.jsonObject.dataSet.monthData.year=closest${bean.name}.dataset.currentYear
+		   				icu4jCalendar_${fieldName}.jsonObject.dataSet.monthData.day=closest${bean.name}.dataset.currentDay
+		   			}
+	   			 </g:if>
+	   			 <g:else>
+	   			$('#${fieldName}').data('data-current-year',closest${bean.name}.dataset.currentYear); 
+					
+	   				//document.getElementById('${fieldName}').setAttribute('data-current-year',closest${bean.name}.dataset.currentYear);
+   					//document.getElementById('${fieldName}').setAttribute('data-current-month',closest${bean.name}.dataset.currentMonth);
+   					//document.getElementById('${fieldName}').setAttribute('data-current-day',closest${bean.name}.dataset.currentDay);
+   					//document.getElementById('${fieldName}').setAttribute('data-select-date',true);
+		   		 	//icu4jCalendar_${fieldName}.jsonObject.selectDate=true
+		   			icu4jCalendar_${fieldName}.jsonObject.dataSet.monthData.month=closest${bean.name}.dataset.currentMonth
+		   			icu4jCalendar_${fieldName}.jsonObject.dataSet.monthData.year=closest${bean.name}.dataset.currentYear
+		   			icu4jCalendar_${fieldName}.jsonObject.dataSet.monthData.day=closest${bean.name}.dataset.currentDay
+	   			</g:else>
+	   				document.getElementById('${fieldName}').value=closest${bean.name}.dataset.humanDate;
+		   		    document.getElementById('${fieldName}Real').value=closest${bean.name}.dataset.date;
+		   		 	document.getElementById('${fieldName}Alternative').value=closest${bean.name}.dataset.alternativeDate;
+	   		</g:each>
+	    </g:if>
+	    getDialog();
+	    $("#datePickerDialog_${bean.name}").dialog("close");
+   </g:if>
   }
 });
  

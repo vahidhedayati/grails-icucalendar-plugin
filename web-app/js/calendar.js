@@ -3,6 +3,7 @@ function Icu4jCalendar() {
 	var jsonObject;
 	var className;
 	var actualClass;
+	var current = this;
 	
 	
 	 this.createCalendar = function(jsonObject,className,actualClass ){
@@ -14,41 +15,35 @@ function Icu4jCalendar() {
 	
 	 
 	 this.datePicker=function(divId) {
-			if (document.getElementsByClassName(this.className)[0].innerHTML.trim()==='') {
-	        	var monthData = this.jsonObject.dataSet.monthData;
-	        	document.getElementsByClassName(this.className)[0].innerHTML = "";
-	        	document.getElementsByClassName(this.className)[0].style.display = "block";    	        	
-	         
-	            var header = document.createElement('div');
-	            header.classList.add('ui-datepicker-header');
-	            header.classList.add('ui-widget-header');
-	            header.classList.add('ui-helper-clearfix');
-	            header.classList.add('ui-corner-all');
-	            
-	            var header1 = document.createElement('div');
-	            header1.classList.add('ui-datepicker-title');
-	            header1.setAttribute('id', 'header-content_'+this.actualClass);
-	            
-	            var yearSelection  = this.drawYear(monthData.year);
-	            var currentYear =yearSelection.year;
-	            var currentMonthSelect = this.drawMonth(currentYear , monthData.month)
-	            var currentMonth = currentMonthSelect.month
-	            header1.appendChild(yearSelection.selection);
-	            header1.appendChild(currentMonthSelect.selection);
-	            
-	            var header2 = document.createElement('div');
-	            header2.setAttribute('id', 'calendarDays_'+this.actualClass);
-	            header2.appendChild(this.drawCalendar(currentYear,monthData.month,monthData.day).table);
-	            
-	            header.appendChild(header1);
-	            header.appendChild(header2);
-	            
-	            document.getElementsByClassName(this.className)['0'].appendChild(header);
-	        } else {
-	        	document.getElementsByClassName(this.className)[0].innerHTML = "";
-	        	document.getElementsByClassName(this.className)[0].style.display = "none";
-	        }
-	    	
+        	var monthData = this.jsonObject.dataSet.monthData;
+        	document.getElementsByClassName(this.className)[0].innerHTML = "";
+        	document.getElementsByClassName(this.className)[0].style.display = "block";    	        	
+         
+            var header = document.createElement('div');
+            header.classList.add('ui-datepicker-header');
+            header.classList.add('ui-widget-header');
+            header.classList.add('ui-helper-clearfix');
+            header.classList.add('ui-corner-all');
+            
+            var header1 = document.createElement('div');
+            header1.classList.add('ui-datepicker-title');
+            header1.setAttribute('id', 'header-content_'+this.actualClass);
+            
+            var yearSelection  = this.drawYear(monthData.year);
+            var currentYear =yearSelection.year;
+            var currentMonthSelect = this.drawMonth(currentYear , monthData.month)
+            var currentMonth = currentMonthSelect.month
+            header1.appendChild(yearSelection.selection);
+            header1.appendChild(currentMonthSelect.selection);
+            
+            var header2 = document.createElement('div');
+            header2.setAttribute('id', 'calendarDays_'+this.actualClass);
+            header2.appendChild(this.drawCalendar(currentYear,monthData.month,monthData.day).table);
+            
+            header.appendChild(header1);
+            header.appendChild(header2);
+            
+            document.getElementsByClassName(this.className)['0'].appendChild(header);
 	    }
 
 	    this.drawCalendar=function(currentYear,currentMonth, providedDay) {
@@ -57,7 +52,12 @@ function Icu4jCalendar() {
 	        var monthDays = calendarResults[currentYear].formation[currentMonth]
 	        var weekDays = this.jsonObject.daysOfWeek;
 	        var daysOfMonth = this.jsonObject.daysOfMonth;
+	        var monthsOfYear = this.jsonObject.monthsOfYear;
 	        
+	        var monthNumberMap = new Object();
+	        monthsOfYear.forEach(function(entry) {
+	        	monthNumberMap[entry.month] = entry.monthNumber;
+	        })
 	        var table =document.createElement('table')
 	        table.classList.add('ui-datepicker-calendar');
 	        table.setAttribute('id', 'calendar-content_'+this.actualClass);
@@ -80,6 +80,7 @@ function Icu4jCalendar() {
 	        daysOfMonth.forEach(function(entry) {
 	            monthMap[entry.day] = entry.value;
 	        })
+	        
 	        var currentDay=monthDays.start;
 	        var currentCellId =monthDays.startDay;
 	        var rowCounter=1;
@@ -115,6 +116,10 @@ function Icu4jCalendar() {
 	                }
 	            	cell.classList.add('selectable');
 	            	cell.setAttribute('data-human-date',dayName+' '+monthName+' '+yearName);
+	            	cell.setAttribute('data-alternative-date',dayName+'/'+monthNumberMap[currentMonth]+'/'+yearName);
+	            	cell.setAttribute('data-current-year',currentYear);
+	            	cell.setAttribute('data-current-month',currentMonth);
+	            	cell.setAttribute('data-current-day',currentDay);
 	            	cell.setAttribute('data-date',currentDay+'/'+currentMonth+'/'+currentYear);
 	            }
 	            if (j==6) {
@@ -160,7 +165,7 @@ function Icu4jCalendar() {
 	        let select1 = document.createElement('select');
 	        select1.setAttribute('id', 'yearSelection_'+this.actualClass);
 	        select1.classList.add('ui-datepicker-year');
-	        select1.addEventListener('change',function() { updateYear(this.value); },false);
+	        select1.addEventListener('change',function() { current.updateYear(this.value); },false);
 	        var selectedYear;
 	        Object.keys(calendarResults).forEach(function(entry,i) {
 	            if (i===0) {
@@ -184,7 +189,7 @@ function Icu4jCalendar() {
 	        let select2 = document.createElement('select');
 	        select2.setAttribute('id', 'monthSelection_'+this.actualClass);
 	        select2.classList.add('ui-datepicker-year');
-	        select2.addEventListener('change',function() { updateMonth(this.value); },false);
+	        select2.addEventListener('change',function() { current.updateMonth(this.value); },false);
 	        var selectedMonth;
 	        monthResults.forEach(function(entry,i) {
 	            if (i===0) {

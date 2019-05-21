@@ -49,6 +49,9 @@ class IcuBean {
 	
 	boolean loadJqueryUi
 	
+	
+	List<String> updateSelectionFor=[]
+	boolean updateOnlyIfEmpty
 	//The format to get date picker to select date by
 	//At the moment only supported format is this or defaulted to this
 	//String dateFormat='dd/MM/yyyy'
@@ -66,6 +69,7 @@ class IcuBean {
 		loadStyle(nullable:true)
 		popupCalendar(nullable:true)
 		loadJqueryUi(nullable:true)
+		updateOnlyIfEmpty(nullable:true)
 	}
 	static def checkLocale= { val, obj, errors ->
 		if (!val && !obj.lang)  {

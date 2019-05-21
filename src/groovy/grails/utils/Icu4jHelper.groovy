@@ -1,5 +1,6 @@
 package grails.utils
 
+import java.util.List;
 import java.util.Locale;
 
 import grails.converters.JSON
@@ -63,6 +64,11 @@ class Icu4jHelper {
 	Calendar fromCalendar
 	IncrementMethod incrementMethod
 	
+	
+	//List<String> updateSelectionFor=[]
+	//boolean updateOnlyIfEmpty
+	
+	
 	public static ULocale convertToULocale(Locale local) {
 		return new ULocale(local.language,local.country,local.variant)
 	}
@@ -79,6 +85,8 @@ class Icu4jHelper {
 		this.reverseDateBy=bean.reverseBy
 		this.incrementMethod=bean.incrementMethod
 		this.selectDate=bean.selectDate
+		//this.updateSelectionFor=bean.updateSelectionFor
+		//this.updateOnlyIfEmpty=bean.updateOnlyIfEmpty
 		generateLocaleAndCalendar()
 	}
 
@@ -131,16 +139,10 @@ class Icu4jHelper {
 		
 		// month day string value of 1..31 in English or Arabic based etc 
 		EnumSet<DaysOfMonth> daysOfMonth =  EnumSet.allOf(DaysOfMonth.class)
-		
-		// set up week day names per locale - this is the day names i.e. Monday in given locale 
-		//DaysOfWeek.initialiseEnumByLocale(ulocale)
-		
+
 		//Collect EnumSet of days of week for given locale
-		//wealthy information such as week day name per locale and which days are considered weekend
 		List<DaysOfWeek> daysOfWeek = DaysOfWeek.daysByLocale(locale)
-		
-		// set up week day names per locale - this is the day names i.e. Monday in given locale
-		//MonthsOfYear.initialiseEnumByLocale(ulocale)
+
 		/**
 		 * Months must be set by locale:
 		 * Month 1 of Julian Calendar is Jan 
@@ -150,7 +152,7 @@ class Icu4jHelper {
 		 * This sets months up to align correctly with date conversion
 		 */
 		EnumSet<MonthsOfYear> monthsOfYear = MonthsOfYear.monthsByLocale(ulocale)
-		
+		//updateSelectionFor:updateSelectionFor, updateOnlyIfEmpty:updateOnlyIfEmpty,
 		Map results= [ dataSet:formMonth, selectDate:selectDate,
 			daysOfWeek:daysOfWeek.collect{[dow:it.dow,value:it.longName, weekend:it.isWeekend]},
 			daysOfMonth:daysOfMonth.collect{[day:it.dom,value:it.value]},
