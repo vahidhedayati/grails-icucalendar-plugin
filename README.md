@@ -26,22 +26,26 @@ Dependency Grails 3 (build.gradle):
 
 Documentation
 ---
+
+#### [Class documentation](https://vahidhedayati.github.io/grails-icucalendar-plugin/gapi/index.html)
+
+
 ![sample image](https://raw.githubusercontent.com/vahidhedayati/grails-icucalendar-plugin/master/docs/basic-calendar-conversion-from_en_gb-to-fa_IR.png)
 
-[video demonstrating very basic stuff on youtube part 1](https://www.youtube.com/watch?v=ARFbeiKbzm8)
+#### [video demonstrating very basic stuff on youtube part 1](https://www.youtube.com/watch?v=ARFbeiKbzm8)
 
-[video demonstrating fixes found on part 1 + update another date based on first picked youtube part 2](https://www.youtube.com/watch?v=vxVZmFvGfwM)
+#### [video demonstrating fixes found on part 1 + update another date based on first picked youtube part 2](https://www.youtube.com/watch?v=vxVZmFvGfwM)
 
 
 
 #### [Examples / how to use ](https://github.com/vahidhedayati/grails-icucalendar-plugin/blob/master/examples.md)
 
 
-[Backend content produced for frontend ](https://github.com/vahidhedayati/grails-icucalendar-plugin/blob/master/backend-content.md)
+##### [Backend content produced for frontend ](https://github.com/vahidhedayati/grails-icucalendar-plugin/blob/master/backend-content.md)
 
 
-[Manual method most provided by plugin](https://github.com/vahidhedayati/grails-icucalendar-plugin/blob/master/docs/manual-most-provided.gsp)
+##### [Manual method most provided by plugin](https://github.com/vahidhedayati/grails-icucalendar-plugin/blob/master/docs/manual-most-provided.gsp)
 
-[Total Manual way of calling](https://github.com/vahidhedayati/grails-icucalendar-plugin/blob/master/docs/manual-sample.gsp)
+##### [Total Manual way of calling](https://github.com/vahidhedayati/grails-icucalendar-plugin/blob/master/docs/manual-sample.gsp)
 
   
