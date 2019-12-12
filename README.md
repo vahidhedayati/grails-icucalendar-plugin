@@ -1,6 +1,10 @@
 
 icucalendar
 =========
+### Side note - similar / related projects
+- [grails-daysofweek-plugin](https://github.com/vahidhedayati/grails-daysofweek-plugin)
+
+- [grails-icucalendar-plugin (this)](https://github.com/vahidhedayati/grails-icucalendar-plugin)
 
 Grails icucalendar plugin using ICU4J libraries to work out international calendar / datepicker.
  
